@@ -1,0 +1,26 @@
+<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="책">
+  <rect width="800" height="1000" fill="#F3ECE2"/>
+  <g stroke="#14110E" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- pages left/right -->
+    <path d="M400 300 C 300 250 180 250 130 280 L130 740 C 180 710 300 710 400 760 Z" fill="#FBFBF7"/>
+    <path d="M400 300 C 500 250 620 250 670 280 L670 740 C 620 710 500 710 400 760 Z" fill="#FBFBF7"/>
+    <!-- spine -->
+    <path d="M400 300 L400 760"/>
+    <!-- text lines left -->
+    <g stroke-width="6" stroke="#C0563B">
+      <path d="M190 360 L350 380"/>
+      <path d="M190 420 L350 440"/>
+      <path d="M190 480 L350 500"/>
+      <path d="M190 540 L320 558"/>
+    </g>
+    <!-- text lines right -->
+    <g stroke-width="6" stroke="#C0563B">
+      <path d="M450 380 L610 360"/>
+      <path d="M450 440 L610 420"/>
+      <path d="M450 500 L610 480"/>
+      <path d="M480 558 L610 540"/>
+    </g>
+  </g>
+  <!-- bookmark -->
+  <path d="M560 250 L560 430 L590 400 L620 430 L620 250 Z" fill="#C0563B" stroke="#14110E" stroke-width="7" stroke-linejoin="round"/>
+</svg>

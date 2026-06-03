@@ -1,0 +1,361 @@
+/* ============================================================
+   DOKI — 물건 도깨비
+   Mood: foundfounded-style minimal — generous whitespace,
+   bold display type, cream canvas, one ink colour.
+   ============================================================ */
+
+:root {
+  --bg:   #F2EFE6;   /* cream canvas */
+  --ink:  #14110E;   /* near-black ink */
+  --ink-soft: #6b655c;
+  --paper:#FBFBF7;   /* sclera white */
+  --line: rgba(20,17,14,.14);
+  --ease: cubic-bezier(.16,.84,.30,1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Space Grotesk", "IBM Plex Sans KR", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+body { cursor: default; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(16px, 2.4vw, 34px) clamp(18px, 4vw, 56px);
+  mix-blend-mode: multiply;
+}
+.wordmark {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 2.4vw, 30px);
+  letter-spacing: .14em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 20px);
+  font-size: 12.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.topnav__dot { font-size: 7px; color: var(--ink); }
+.topnav .ko { font-family: "IBM Plex Sans KR", sans-serif; }
+
+/* ---------- stage / hero ---------- */
+.stage {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.hero {
+  position: relative;
+  z-index: 5;
+  max-width: 720px;
+  padding: clamp(120px, 17vh, 220px) clamp(18px, 4vw, 56px) 0;
+  pointer-events: none;
+}
+.hero__kicker {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-size: 13px;
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  margin: 0 0 clamp(18px, 3vh, 34px);
+}
+.hero__title {
+  font-family: "Black Han Sans", "Space Grotesk", sans-serif;
+  font-weight: 400;
+  font-size: clamp(64px, 12vw, 168px);
+  line-height: .9;
+  letter-spacing: -.01em;
+  margin: 0;
+}
+.hero__title--out {
+  -webkit-text-stroke: 2px var(--ink);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.hero__sub {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-weight: 300;
+  font-size: clamp(14px, 1.3vw, 17px);
+  line-height: 1.7;
+  color: var(--ink-soft);
+  margin: clamp(24px, 4vh, 40px) 0 0;
+  max-width: 30ch;
+}
+
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(18px, 3vh, 34px);
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 6;
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  color: var(--ink-soft);
+  background: rgba(242,239,230,.7);
+  backdrop-filter: blur(4px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  pointer-events: none;
+  transition: opacity .5s var(--ease);
+}
+
+/* ---------- eyes ---------- */
+.eyes {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+.eye {
+  position: absolute;
+  width: var(--size, 140px);
+  height: var(--size, 140px);
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+  cursor: pointer;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+.eye svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.eye .sclera   { fill: var(--paper); stroke: var(--ink); stroke-width: 5; }
+.eye .lid      { fill: var(--bg); stroke: var(--ink); stroke-width: 5; }
+.eye .iris     { fill: var(--ink); }
+.eye .iris-ring{ fill: none; stroke: var(--ink); stroke-width: 0; opacity: .0; }
+.eye .pupil    { fill: var(--bg); }
+.eye .spark    { fill: var(--paper); }
+.eye .lash     { stroke: var(--ink); stroke-width: 4.5; stroke-linecap: round; fill: none; }
+
+/* the moving part */
+.eye .gaze { will-change: transform; }
+/* top eyelid used for blink */
+.eye .blinker {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleY(0);
+}
+
+/* real eyes get a faint product-tinted iris ring on hover */
+.eye[data-door="true"]:hover .iris-ring { opacity: .9; stroke-width: 6; stroke: var(--door-tint, var(--ink)); }
+.eye:hover { filter: drop-shadow(0 10px 20px rgba(20,17,14,.10)); }
+
+/* ---------- zoom veil ---------- */
+.veil {
+  position: fixed;
+  z-index: 40;
+  top: 0; left: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+}
+
+/* ---------- product gallery ---------- */
+.gallery {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--bg);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  padding-bottom: 40px;
+}
+.gallery.is-open { visibility: visible; }
+
+.gallery__bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(16px, 2.4vw, 28px) clamp(18px, 4vw, 56px);
+  background: rgba(242,239,230,.82);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.backbtn {
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: .02em;
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-family: "IBM Plex Sans KR", sans-serif;
+}
+.backbtn__arrow { transition: transform .3s var(--ease); display: inline-block; }
+.backbtn:hover .backbtn__arrow { transform: translateX(-5px); }
+.gallery__brand {
+  font-size: 12px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.gallery__intro {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  align-items: end;
+  padding: clamp(48px, 9vh, 130px) clamp(18px, 4vw, 56px) clamp(36px, 6vh, 72px);
+  border-bottom: 1px solid var(--line);
+}
+.gallery__title {
+  font-family: "Black Han Sans", sans-serif;
+  font-weight: 400;
+  font-size: clamp(48px, 8vw, 120px);
+  line-height: .92;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+.gallery__lead {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-weight: 300;
+  font-size: clamp(14px, 1.2vw, 16px);
+  line-height: 1.75;
+  color: var(--ink-soft);
+  margin: 0;
+  max-width: 42ch;
+  justify-self: end;
+}
+
+/* grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(20px, 2.6vw, 44px);
+  padding: clamp(36px, 6vh, 72px) clamp(18px, 4vw, 56px);
+}
+.card { display: flex; flex-direction: column; }
+.card__media {
+  background: var(--tint, #eee);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+.card__media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .7s var(--ease);
+}
+.card:hover .card__media img { transform: scale(1.04); }
+.card__no {
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink2, var(--ink-soft));
+  font-weight: 500;
+}
+.card__name {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-weight: 700;
+  font-size: clamp(26px, 2.6vw, 38px);
+  margin: 10px 0 14px;
+  line-height: 1;
+}
+.card__desc {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-weight: 300;
+  font-size: 14.5px;
+  line-height: 1.72;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+}
+.card__spec {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.card__spec li:last-child { font-weight: 700; margin-top: 2px; }
+
+.gallery__foot {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: clamp(28px, 5vh, 60px) clamp(18px, 4vw, 56px) 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  font-family: "IBM Plex Sans KR", sans-serif;
+}
+
+/* card highlight when arrived from a specific eye */
+.card.is-focus { animation: focuspulse 1.4s var(--ease); }
+@keyframes focuspulse {
+  0%   { box-shadow: 0 0 0 0 rgba(20,17,14,0); }
+  30%  { box-shadow: 0 0 0 3px var(--ink2, var(--ink)); }
+  100% { box-shadow: 0 0 0 0 rgba(20,17,14,0); }
+}
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(64px, 9vh, 90px);
+  transform: translate(-50%, 14px);
+  z-index: 60;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-size: 14px;
+  letter-spacing: .01em;
+  padding: 12px 22px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s var(--ease), transform .35s var(--ease);
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px) {
+  .gallery__intro { grid-template-columns: 1fr; gap: 28px; }
+  .gallery__lead { justify-self: start; }
+  .grid { grid-template-columns: 1fr; }
+  .card__media { aspect-ratio: 16 / 11; }
+  .hero { padding-top: 140px; }
+  /* thin the herd of eyes on small screens via JS-set class */
+  .eye.eye--hideMobile { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOKI — 물건 도깨비</title>
+  <meta name="description" content="물건에 깃든 도깨비. 눈을 클릭해 숨은 물건을 찾으세요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ===== HOME / STAGE ===== -->
+  <header class="topbar">
+    <a class="wordmark" href="#" aria-label="DOKI 홈">DOKI</a>
+    <nav class="topnav">
+      <span class="topnav__tag">물건 도깨비</span>
+      <span class="topnav__dot">●</span>
+      <span class="topnav__year">SINCE 道<span class="ko">깨비</span></span>
+    </nav>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="hero">
+      <p class="hero__kicker">눈을 마주치고, 눈을 클릭하세요</p>
+      <h1 class="hero__title">물건에<br />깃든<br /><span class="hero__title--out">도깨비</span></h1>
+      <p class="hero__sub">여섯 개의 눈 중 셋은 진짜 문, 셋은 장난.<br />진짜 문을 누르면 숨겨둔 물건이 깨어납니다.</p>
+    </div>
+
+    <!-- eyes are injected here by JS -->
+    <div class="eyes" id="eyes" aria-hidden="false"></div>
+
+    <p class="hint" id="hint">힌트: 진짜 도깨비 눈은 당신을 더 또렷이 바라봅니다 👁</p>
+  </main>
+
+  <!-- ===== ZOOM TRANSITION VEIL ===== -->
+  <div class="veil" id="veil" aria-hidden="true"></div>
+
+  <!-- ===== PRODUCT GALLERY ===== -->
+  <section class="gallery" id="gallery" aria-hidden="true">
+    <header class="gallery__bar">
+      <button class="backbtn" id="backbtn" type="button">
+        <span class="backbtn__arrow">←</span> 눈으로 돌아가기
+      </button>
+      <span class="gallery__brand">DOKI / 깨어난 물건들</span>
+    </header>
+
+    <div class="gallery__intro">
+      <h2 class="gallery__title">숨어 있던<br />세 물건</h2>
+      <p class="gallery__lead">도깨비는 쓸모를 잃은 물건에 깃들어 다시 눈을 뜹니다.<br />각 물건에는 한때의 쓰임과 새 이야기가 함께 담겨 있습니다.</p>
+    </div>
+
+    <div class="grid" id="grid">
+      <article class="card" id="card-fan" style="--tint:#E9F0EC;--ink2:#2E7D5B">
+        <div class="card__media"><img src="assets/fan.svg" alt="선풍기" loading="lazy" /></div>
+        <div class="card__meta">
+          <span class="card__no">01 — 바람</span>
+          <h3 class="card__name">선풍기</h3>
+          <p class="card__desc">멈춰 있던 여름의 바람을 기억하는 물건. 날개를 돌리면 잊고 지낸 계절의 공기가 다시 흐릅니다. 회전하는 세 개의 날 사이로 도깨비가 숨을 불어넣습니다.</p>
+          <ul class="card__spec">
+            <li>지름 320mm · 3단 풍속</li>
+            <li>리퍼브 메탈 케이지</li>
+            <li>₩ 89,000</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card" id="card-umbrella" style="--tint:#EDEAF4;--ink2:#5B49B8">
+        <div class="card__media"><img src="assets/umbrella.svg" alt="우산" loading="lazy" /></div>
+        <div class="card__meta">
+          <span class="card__no">02 — 비</span>
+          <h3 class="card__name">우산</h3>
+          <p class="card__desc">머리 위로 펼쳐지는 작은 지붕. 비 오는 날에만 깨어나 당신을 가려 주는 도깨비의 우산입니다. 여덟 개의 살이 펼쳐질 때 빗소리가 잦아듭니다.</p>
+          <ul class="card__spec">
+            <li>8살 자동 우산 · 지름 1,050mm</li>
+            <li>발수 리사이클 캐노피</li>
+            <li>₩ 42,000</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card" id="card-book" style="--tint:#F3ECE2;--ink2:#C0563B">
+        <div class="card__media"><img src="assets/book.svg" alt="책" loading="lazy" /></div>
+        <div class="card__meta">
+          <span class="card__no">03 — 이야기</span>
+          <h3 class="card__name">책</h3>
+          <p class="card__desc">덮여 있던 페이지를 펼치면 잠든 이야기가 눈을 뜹니다. 도깨비가 가장 오래 머무는 물건, 읽는 사람마다 다른 결말을 속삭입니다.</p>
+          <ul class="card__spec">
+            <li>양장 · 240페이지</li>
+            <li>도깨비 설화 모음</li>
+            <li>₩ 24,000</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <footer class="gallery__foot">
+      <span>DOKI © 道깨비 STUDIO</span>
+      <span>물건은 사라지지 않고, 잠들 뿐.</span>
+    </footer>
+  </section>
+
+  <!-- toast for fake-eye trick -->
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

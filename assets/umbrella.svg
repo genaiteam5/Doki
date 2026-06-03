@@ -1,0 +1,19 @@
+<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="우산">
+  <rect width="800" height="1000" fill="#EDEAF4"/>
+  <!-- canopy -->
+  <g stroke="#14110E" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M400 150 C 180 150 120 360 120 400 C 200 340 250 340 330 400 C 380 350 420 350 470 400 C 550 340 600 340 680 400 C 680 360 620 150 400 150 Z" fill="#7E6BD6"/>
+    <path d="M400 150 C 330 200 320 330 330 400" fill="none"/>
+    <path d="M400 150 C 470 200 480 330 470 400" fill="none"/>
+    <path d="M120 400 C 250 345 300 360 400 165" fill="none" stroke="none"/>
+    <!-- pole -->
+    <path d="M400 150 L400 800"/>
+    <path d="M400 800 C 400 870 470 870 470 800" fill="none"/>
+    <!-- ferrule -->
+    <path d="M400 110 L400 150"/>
+    <circle cx="400" cy="104" r="13" fill="#14110E" stroke="none"/>
+  </g>
+  <!-- panel shading -->
+  <path d="M330 400 C 250 340 200 340 120 400 C 120 360 180 150 400 150 C 300 170 320 300 330 400 Z" fill="#9684E0"/>
+  <path d="M470 400 C 550 340 600 340 680 400 C 680 360 620 150 400 150 C 500 170 480 300 470 400 Z" fill="#9684E0"/>
+</svg>
