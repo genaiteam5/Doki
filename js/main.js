@@ -10,25 +10,31 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- eye sclera shapes (viewBox 0 0 100 100) ---------- */
-  // each shape: outline path + how far the pupil may travel (x,y) in svg units
-  const SHAPES = {
-    almond: { d: "M3,50 C24,17 76,17 97,50 C76,83 24,83 3,50 Z", mx: 19, my: 11 },
-    round:  { d: "M50,7 C74,7 93,26 93,50 C93,74 74,93 50,93 C26,93 7,74 7,50 C7,26 26,7 50,7 Z", mx: 17, my: 17 },
-    wide:   { d: "M2,50 C28,28 72,28 98,50 C72,72 28,72 2,50 Z", mx: 23, my: 7 },
-    tall:   { d: "M50,4 C71,26 71,74 50,96 C29,74 29,26 50,4 Z", mx: 9, my: 19 },
-    sleepy: { d: "M4,53 C26,38 74,38 96,53 C74,62 26,62 4,53 Z", mx: 16, my: 4 },
+  /* ---------- eye-pair tile styles (viewBox 0 0 200 140) ----------
+     palette + bold flat shapes taken from the reference collage
+     (image/eye.jpg). each pair of pupils tracks the cursor together.
+     rx/ry = sclera radii, pr = pupil radius, pf = pupil fill,
+     mx/my = how far the pupils may travel, speckle = textured tile. */
+  const TYPES = {
+    green:   { bg: "#1FA24C", rx: 36, ry: 31, pr: 15, pf: "#14110E", mx: 15, my: 12 },
+    skyblue: { bg: "#52C3EE", rx: 42, ry: 26, pr: 13, pf: "#14110E", mx: 19, my: 8,  speckle: true },
+    night:   { bg: "#141414", rx: 29, ry: 35, pr: 13, pf: "#B7E2F4", mx: 10, my: 17 },
+    cobalt:  { bg: "#2E78C8", rx: 27, ry: 35, pr: 12, pf: "#14110E", mx: 9,  my: 17 },
+    lime:    { bg: "#8DC63F", rx: 45, ry: 47, pr: 15, pf: "#14110E", mx: 21, my: 21 },
+    yellow:  { bg: "#F2CB35", rx: 42, ry: 14, pr: 11, pf: "#14110E", mx: 19, my: 4 },
+    moss:    { bg: "#A6C84C", rx: 30, ry: 27, pr: 8,  pf: "#14110E", mx: 15, my: 11, speckle: true },
+    pool:    { bg: "#1F66C2", rx: 31, ry: 31, pr: 13, pf: "#14110E", mx: 14, my: 14 },
   };
 
-  /* ---------- the curated eye layout ---------- */
-  // door:true  -> real product door ; product = which card to focus
+  /* ---------- the curated tile layout (loose, airy 3 + 3) ---------- */
+  // door:true -> real product door ; product = which card to focus
   const EYES = [
-    { x: 79, y: 23, size: 152, rot: -6,  shape: "almond", door: true,  product: "fan" },
-    { x: 91, y: 61, size: 116, rot:  8,  shape: "round",  door: false },
-    { x: 61, y: 79, size: 138, rot: -3,  shape: "wide",   door: true,  product: "umbrella" },
-    { x: 28, y: 67, size: 112, rot:  5,  shape: "sleepy", door: false, hideMobile: true },
-    { x: 55, y: 30, size: 92,  rot: -11, shape: "tall",   door: false, hideMobile: true },
-    { x: 85, y: 42, size: 110, rot:  4,  shape: "almond", door: true,  product: "book" },
+    { x: 72, y: 25, size: 320, rot: -4,  type: "green",   door: true,  product: "fan" },
+    { x: 90, y: 58, size: 220, rot:  6,  type: "yellow",  door: false },
+    { x: 50, y: 29, size: 230, rot: -8,  type: "moss",    door: false, hideMobile: true },
+    { x: 30, y: 71, size: 250, rot:  4,  type: "skyblue", door: false },
+    { x: 62, y: 74, size: 300, rot: -3,  type: "cobalt",  door: true,  product: "umbrella" },
+    { x: 86, y: 40, size: 250, rot:  3,  type: "lime",    door: true,  product: "book" },
   ];
 
   const TINTS = { fan: "#2E7D5B", umbrella: "#5B49B8", book: "#C0563B" };
@@ -55,11 +61,22 @@
   const eyeStates = [];
   let locked = false; // true during a zoom transition
 
-  /* ---------- build one eye ---------- */
+  /* ---------- build one eye-pair tile ---------- */
+  const LX = 60, RX = 140, CY = 70; // eye centres in the 200x140 viewBox
+
+  function speckles(id, color) {
+    // a few faint dots to echo the textured tiles in the reference
+    const pts = [[24, 30], [170, 26], [40, 110], [156, 112], [100, 22], [186, 70], [14, 78]];
+    return pts.map(([x, y], i) =>
+      `<circle cx="${x}" cy="${y}" r="${2 + (i % 3)}" fill="${color}" opacity="0.18"/>`).join("");
+  }
+
   function buildEye(cfg) {
     const id = `eye${uid++}`;
-    const shape = SHAPES[cfg.shape] || SHAPES.almond;
-    const clipId = `clip-${id}`;
+    const t = TYPES[cfg.type] || TYPES.green;
+    const clL = `clL-${id}`, clR = `clR-${id}`;
+    const speckleColor = t.bg === "#141414" ? "#FFFFFF" : "#000000";
+    const sparkFill = t.pf === "#14110E" ? `<circle class="spark" cx="-${t.pr * 0.34}" cy="-${t.pr * 0.34}" r="${t.pr * 0.3}"/>` : "";
 
     const el = document.createElement("div");
     el.className = "eye" + (cfg.hideMobile ? " eye--hideMobile" : "");
@@ -76,21 +93,31 @@
     el.setAttribute("tabindex", "0");
 
     el.innerHTML = `
-      <svg viewBox="0 0 100 100">
+      <svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice">
         <defs>
-          <clipPath id="${clipId}"><path d="${shape.d}"/></clipPath>
+          <clipPath id="${clL}"><ellipse cx="${LX}" cy="${CY}" rx="${t.rx}" ry="${t.ry}"/></clipPath>
+          <clipPath id="${clR}"><ellipse cx="${RX}" cy="${CY}" rx="${t.rx}" ry="${t.ry}"/></clipPath>
         </defs>
-        <path class="sclera" d="${shape.d}"/>
-        <g clip-path="url(#${clipId})">
-          <g class="gaze">
-            <circle class="iris" cx="50" cy="50" r="19"/>
-            <circle class="iris-ring" cx="50" cy="50" r="19"/>
-            <circle class="pupil" cx="50" cy="50" r="7.5"/>
-            <circle class="spark" cx="44" cy="43" r="3.6"/>
+        <rect class="tilebg" x="0" y="0" width="200" height="140" rx="16" fill="${t.bg}"/>
+        ${t.speckle ? speckles(id, speckleColor) : ""}
+        <ellipse class="sclera" cx="${LX}" cy="${CY}" rx="${t.rx}" ry="${t.ry}"/>
+        <ellipse class="sclera" cx="${RX}" cy="${CY}" rx="${t.rx}" ry="${t.ry}"/>
+        <g class="gaze">
+          <g clip-path="url(#${clL})">
+            <g transform="translate(${LX} ${CY})">
+              <circle class="pupil" cx="0" cy="0" r="${t.pr}" fill="${t.pf}"/>${sparkFill}
+            </g>
           </g>
-          <rect class="blinker" x="-6" y="-8" width="112" height="118"/>
+          <g clip-path="url(#${clR})">
+            <g transform="translate(${RX} ${CY})">
+              <circle class="pupil" cx="0" cy="0" r="${t.pr}" fill="${t.pf}"/>${sparkFill}
+            </g>
+          </g>
         </g>
-        <path class="rim" d="${shape.d}" fill="none" stroke="var(--ink)" stroke-width="5"/>
+        <g class="blinker">
+          <rect x="${LX - t.rx}" y="${CY - t.ry - 2}" width="${t.rx * 2}" height="${t.ry * 2 + 4}" fill="${t.bg}" clip-path="url(#${clL})"/>
+          <rect x="${RX - t.rx}" y="${CY - t.ry - 2}" width="${t.rx * 2}" height="${t.ry * 2 + 4}" fill="${t.bg}" clip-path="url(#${clR})"/>
+        </g>
       </svg>`;
 
     eyesLayer.appendChild(el);
@@ -100,8 +127,9 @@
       svg: el.querySelector("svg"),
       gaze: el.querySelector(".gaze"),
       blinker: el.querySelector(".blinker"),
-      mx: shape.mx,
-      my: shape.my,
+      mx: t.mx,
+      my: t.my,
+      pr: t.pr,
       cur: { x: 0, y: 0 },
       tar: { x: 0, y: 0 },
       busy: false,           // pause tracking during a gag
@@ -251,7 +279,7 @@
     tl.to(s.gaze, { duration: 0.4, ease: "power2.in",
         onUpdate: () => s.gaze.setAttribute("transform", "translate(0 0)") }, 0)
       .to(s.svg, { scale: 9, duration: 0.7, ease: "power3.in", transformOrigin: "50% 50%" }, 0)
-      .to(s.svg.querySelector(".pupil"), { attr: { r: 60 }, duration: 0.6, ease: "power3.in" }, 0.05)
+      .to(s.svg.querySelectorAll(".pupil"), { attr: { r: 80 }, duration: 0.6, ease: "power3.in" }, 0.05)
       .to(veil, { scale, duration: 0.7, ease: "power3.in" }, 0.18)
       .set(gallery, { className: "gallery is-open" });
   }
@@ -274,6 +302,7 @@
 
   /* ---------- close gallery ---------- */
   function closeGallery() {
+    gsap.killTweensOf(gallery);
     gsap.to(gallery, { opacity: 0, duration: 0.4, ease: "power2.in",
       onComplete: () => {
         gallery.classList.remove("is-open");
@@ -281,7 +310,7 @@
         // reset every eye that was opened
         eyeStates.forEach((s) => {
           gsap.set(s.svg, { scale: 1 });
-          gsap.set(s.svg.querySelector(".pupil"), { attr: { r: 7.5 } });
+          gsap.set(s.svg.querySelectorAll(".pupil"), { attr: { r: s.pr } });
           s.busy = false;
         });
       } });
@@ -312,8 +341,7 @@
   if (!reduceMotion) {
     gsap.from(".eye", { scale: 0, opacity: 0, duration: 0.9, ease: "back.out(1.6)",
       stagger: { each: 0.08, from: "random" }, delay: 0.15 });
-    gsap.from(".hero__title", { y: 30, opacity: 0, duration: 1, ease: "power3.out", delay: 0.1 });
-    gsap.from(".hero__kicker, .hero__sub", { y: 16, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.1, delay: 0.3 });
+    gsap.from(".hero__kicker, .hero__sub", { y: 16, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.1, delay: 0.2 });
 
     // occasional involuntary blink from a random calm eye
     const idleBlink = () => {
