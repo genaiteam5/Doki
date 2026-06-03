@@ -2,7 +2,7 @@
    DOKI — eyes wall interactions
    Drives the pre-built collage tiles in eye2.html:
    - every tile's pupils track the cursor (smooth lerp)
-   - 3 doors (A=fan, E=book, I=umbrella) zoom into the gallery
+   - 3 doors (D=fan, C=umbrella, E=book) zoom into their own product page
    - the rest play a goblin trick + a teasing toast
    Requires GSAP.
    ============================================================ */
@@ -22,13 +22,15 @@
   ];
 
   const veil    = document.getElementById("veil");
-  const gallery = document.getElementById("gallery");
   const toastEl = document.getElementById("toast");
   const hintEl  = document.getElementById("hint");
-  const backBtn = document.getElementById("backbtn");
+
+  // per-product veil colour for the zoom-in
+  const VEIL = { fan: "#3DAB9B", umbrella: "#0E0E0E", book: "#0E0E0E" };
 
   let locked = false;
   let seq = 0;
+  let openDetail = null;
   const eyeStates = [];
 
   /* ---------- wire up every eye tile ---------- */
@@ -44,6 +46,7 @@
       svg: el.querySelector("svg"),
       mx: parseFloat(el.dataset.mx) || 8,
       my: parseFloat(el.dataset.my) || 8,
+      biasY: parseFloat(el.dataset.biasy) || 0,
       cur: { x: 0, y: 0 },
       tar: { x: 0, y: 0 },
       busy: false,
@@ -79,7 +82,9 @@
       const dist = Math.hypot(dx, dy) || 1;
       const reach = Math.min(1, dist / 320);
       s.tar.x = (dx / dist) * s.mx * reach;
-      s.tar.y = (dy / dist) * s.my * reach;
+      s.tar.y = (dy / dist) * s.my * reach + s.biasY; // biasY: a resting upward look (umbrella)
+      if (s.tar.y > s.my) s.tar.y = s.my;
+      if (s.tar.y < -s.my) s.tar.y = -s.my;
       s.cur.x += (s.tar.x - s.cur.x) * 0.12;
       s.cur.y += (s.tar.y - s.cur.y) * 0.12;
       setGaze(s);
@@ -137,12 +142,16 @@
     showToast(TRICK_MSGS[seq % TRICK_MSGS.length]);
   }
 
-  /* ---------- real eye: zoom into the gallery ---------- */
+  /* ---------- real eye: zoom into its own product page ---------- */
   function openDoor(s) {
     if (locked) return;
     locked = true;
     s.busy = true;
     hideHint();
+
+    const product = s.product;
+    const detail = document.getElementById("detail-" + product);
+    if (!detail) { locked = false; s.busy = false; return; }
 
     const r = s.el.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -150,52 +159,84 @@
     const maxDist = Math.max(...corners.map(([px, py]) => Math.hypot(px - cx, py - cy)));
     const scale = (maxDist / 20) * 1.15;
 
+    veil.style.background = VEIL[product] || "#0E0E0E";
     veil.style.left = cx + "px";
     veil.style.top = cy + "px";
 
-    prepGallery();
+    prepDetail(detail);
 
     const tl = gsap.timeline({
       onComplete: () => {
-        gallery.scrollTop = 0;
-        focusCard(s.product);
-        gsap.to(gallery, { opacity: 1, duration: 0.45, ease: "power2.out" });
+        detail.scrollTop = 0;
+        gsap.to(detail, { opacity: 1, duration: 0.45, ease: "power2.out" });
         gsap.to(veil, { opacity: 0, duration: 0.5, delay: 0.15, ease: "power2.out",
           onComplete: () => gsap.set(veil, { scale: 0, opacity: 1 }) });
+        if (product === "fan") detail.classList.add("spinning"); // blades start turning
         locked = false;
       },
     });
-    tl.to(s.gaze, { duration: 0.4, ease: "power2.in", onUpdate: () => setGaze(s) }, 0)
-      .to(s.svg, { scale: 9, duration: 0.7, ease: "power3.in", transformOrigin: "50% 50%" }, 0)
-      .to(veil, { scale, duration: 0.7, ease: "power3.in" }, 0.18)
-      .set(gallery, { className: "gallery is-open" });
+
+    // umbrella: the upward gaze rolls back to centre before being pulled in
+    let z = 0;
+    if (product === "umbrella") {
+      tl.add(gazeTo(s, 0, -s.my, { duration: 0.22, ease: "power2.out" }))
+        .add(gazeTo(s, 0, 0, { duration: 0.30, ease: "power2.inOut" }));
+      z = 0.52;
+    } else {
+      tl.to(s.gaze, { duration: 0.3, onUpdate: () => setGaze(s) }, 0);
+    }
+    tl.to(s.svg, { scale: 9, duration: 0.7, ease: "power3.in", transformOrigin: "50% 50%" }, z)
+      .to(veil, { scale, duration: 0.7, ease: "power3.in" }, z + 0.18);
   }
 
-  function prepGallery() {
-    gsap.set(gallery, { opacity: 0 });
-    gallery.classList.add("is-open");
-    gallery.setAttribute("aria-hidden", "false");
-    document.querySelectorAll(".card.is-focus").forEach((c) => c.classList.remove("is-focus"));
+  function prepDetail(detail) {
+    gsap.set(detail, { opacity: 0 });
+    detail.classList.add("is-open");
+    detail.setAttribute("aria-hidden", "false");
+    openDetail = detail;
   }
-  function focusCard(product) {
-    const card = document.getElementById("card-" + product);
-    if (!card) return;
-    card.classList.add("is-focus");
-    if (window.matchMedia("(max-width: 860px)").matches) card.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
-  function closeGallery() {
-    gsap.killTweensOf(gallery);
-    gsap.to(gallery, { opacity: 0, duration: 0.4, ease: "power2.in",
+  function closeDetail() {
+    const detail = openDetail;
+    if (!detail) return;
+    gsap.killTweensOf(detail);
+    gsap.to(detail, { opacity: 0, duration: 0.4, ease: "power2.in",
       onComplete: () => {
-        gallery.classList.remove("is-open");
-        gallery.setAttribute("aria-hidden", "true");
+        detail.classList.remove("is-open", "spinning", "fast", "raining");
+        detail.setAttribute("aria-hidden", "true");
         eyeStates.forEach((s) => { gsap.set(s.svg, { scale: 1 }); s.busy = false; });
+        openDetail = null;
       } });
   }
-  backBtn.addEventListener("click", closeGallery);
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && gallery.classList.contains("is-open")) closeGallery();
+  document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeDetail));
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && openDetail) closeDetail(); });
+
+  /* ---------- per-product micro-interactions ---------- */
+  const fanCta = document.getElementById("fanCta");
+  if (fanCta) fanCta.addEventListener("click", () => {
+    const d = document.getElementById("detail-fan");
+    d.classList.add("spinning");
+    const fast = d.classList.toggle("fast");
+    fanCta.textContent = fast ? "바람 약하게" : "바람 세게";
+  });
+
+  const umbCta = document.getElementById("umbCta");
+  const umbRain = document.getElementById("umbRain");
+  let rainBuilt = false;
+  if (umbCta) umbCta.addEventListener("click", () => {
+    if (!rainBuilt) {
+      let html = "";
+      for (let i = 0; i < 60; i++) {
+        const left = Math.round(Math.random() * 100);
+        const dur = (0.5 + Math.random() * 0.7).toFixed(2);
+        const delay = (Math.random() * 1.2).toFixed(2);
+        html += `<i style="left:${left}%;animation-duration:${dur}s;animation-delay:-${delay}s"></i>`;
+      }
+      umbRain.innerHTML = html;
+      rainBuilt = true;
+    }
+    const d = document.getElementById("detail-umbrella");
+    const raining = d.classList.toggle("raining");
+    umbCta.textContent = raining ? "비 그치기" : "비 내리기";
   });
 
   /* ---------- toast + hint ---------- */

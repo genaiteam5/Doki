@@ -52,38 +52,77 @@
   .veil{position:fixed;z-index:40;top:0;left:0;width:40px;height:40px;border-radius:50%;
     background:var(--black);transform:translate(-50%,-50%) scale(0);pointer-events:none;}
 
-  /* ---- product gallery ---- */
-  .gallery{position:fixed;inset:0;z-index:50;background:var(--ivory);overflow-y:auto;
-    opacity:0;visibility:hidden;color:var(--black);padding-bottom:40px;}
-  .gallery.is-open{visibility:visible;}
-  .gallery__bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
-    padding:clamp(16px,2.4vw,28px) clamp(18px,4vw,56px);background:rgba(237,231,217,.85);
-    backdrop-filter:blur(8px);border-bottom:1px solid rgba(20,17,14,.14);}
-  .backbtn{font:inherit;font-size:13px;color:var(--black);background:none;border:none;cursor:pointer;
+  /* ---- product detail pages (one per door) ---- */
+  .detail{position:fixed;inset:0;z-index:50;overflow-y:auto;opacity:0;visibility:hidden;}
+  .detail.is-open{visibility:visible;}
+  .detail__bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(16px,2.4vw,28px) clamp(18px,4vw,56px);}
+  .back{font:inherit;font-size:13px;background:none;border:none;cursor:pointer;color:inherit;
     display:inline-flex;align-items:center;gap:8px;font-family:"IBM Plex Sans KR",sans-serif;}
-  .backbtn__arrow{transition:transform .3s var(--ease);display:inline-block;}
-  .backbtn:hover .backbtn__arrow{transform:translateX(-5px);}
-  .gallery__brand{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#6b655c;}
-  .gallery__intro{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:end;
-    padding:clamp(48px,9vh,120px) clamp(18px,4vw,56px) clamp(36px,6vh,64px);border-bottom:1px solid rgba(20,17,14,.14);}
-  .gallery__title{font-family:"Black Han Sans",sans-serif;font-size:clamp(48px,8vw,112px);line-height:.92;margin:0;}
-  .gallery__lead{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;font-size:clamp(14px,1.2vw,16px);
-    line-height:1.75;color:#6b655c;margin:0;max-width:42ch;justify-self:end;}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.6vw,44px);
-    padding:clamp(36px,6vh,72px) clamp(18px,4vw,56px);}
-  .card{display:flex;flex-direction:column;}
-  .card__media{background:var(--tint,#eee);border:1px solid rgba(20,17,14,.14);border-radius:4px;
-    aspect-ratio:4/5;overflow:hidden;margin-bottom:22px;}
-  .card__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s var(--ease);}
-  .card:hover .card__media img{transform:scale(1.04);}
-  .card__no{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2,#6b655c);font-weight:500;}
-  .card__name{font-family:"IBM Plex Sans KR",sans-serif;font-weight:700;font-size:clamp(26px,2.6vw,38px);margin:10px 0 14px;line-height:1;}
-  .card__desc{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;font-size:14.5px;line-height:1.72;color:#6b655c;margin:0 0 20px;}
-  .card__spec{list-style:none;margin:auto 0 0;padding:16px 0 0;border-top:1px solid rgba(20,17,14,.14);
-    display:flex;flex-direction:column;gap:6px;font-size:13px;}
-  .card__spec li:last-child{font-weight:700;margin-top:2px;}
-  .card.is-focus{animation:focuspulse 1.4s var(--ease);}
-  @keyframes focuspulse{0%{box-shadow:0 0 0 0 rgba(20,17,14,0);}30%{box-shadow:0 0 0 3px var(--ink2,var(--black));}100%{box-shadow:0 0 0 0 rgba(20,17,14,0);}}
+  .back i{font-style:normal;display:inline-block;transition:transform .3s var(--ease);}
+  .back:hover i{transform:translateX(-5px);}
+  .detail__brand{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.55;}
+  .p-kicker{font-family:"IBM Plex Sans KR",sans-serif;letter-spacing:.04em;font-size:14px;margin:0 0 18px;}
+  .p-title{font-family:"Black Han Sans",sans-serif;line-height:.88;margin:0;font-size:clamp(60px,11vw,150px);}
+  .p-title em{display:block;font-family:"Space Grotesk",sans-serif;font-weight:700;font-style:normal;
+    font-size:.16em;letter-spacing:.34em;margin-top:.4em;}
+  .p-desc{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;line-height:1.8;max-width:40ch;margin:26px 0;}
+  .p-spec{list-style:none;display:flex;flex-direction:column;gap:8px;padding-top:18px;font-size:13px;
+    font-family:"IBM Plex Sans KR",sans-serif;}
+  .p-cta{margin-top:26px;border:none;border-radius:999px;padding:12px 26px;font:inherit;font-weight:700;
+    cursor:pointer;font-family:"IBM Plex Sans KR",sans-serif;}
+  .p-hero{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+    min-height:calc(100vh - 84px);padding:0 clamp(18px,5vw,80px) 48px;}
+  .p-stage{display:grid;place-items:center;}
+  @media (max-width:820px){.p-hero{grid-template-columns:1fr;gap:24px;padding-top:10px;}.p-stage{order:-1;}}
+
+  /* FAN — mint & black, spinning blades */
+  .detail--fan{background:#0E0E0E;color:#EAF3F0;}
+  .detail--fan .p-kicker{color:var(--mint);}
+  .detail--fan .p-title em{color:var(--mint);}
+  .detail--fan .p-desc{color:#9fb4ae;}
+  .detail--fan .p-spec{border-top:1px solid rgba(255,255,255,.14);}
+  .detail--fan .p-spec li:last-child{color:var(--mint);font-weight:700;}
+  .detail--fan .p-cta{background:var(--mint);color:#0E0E0E;}
+  .detail--fan .p-stage svg{width:min(52vh,92%);height:auto;}
+  .blades{transform-origin:100px 100px;animation:spin 2.4s linear infinite;animation-play-state:paused;}
+  .detail--fan.spinning .blades{animation-play-state:running;}
+  .detail--fan.fast .blades{animation-duration:.45s;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* UMBRELLA — clean light, optional rain */
+  .detail--umbrella{background:#EDEAF4;color:#1b1730;}
+  .detail--umbrella .p-kicker{color:#5B49B8;}
+  .detail--umbrella .p-title em{color:#5B49B8;}
+  .detail--umbrella .p-desc{color:#5b556e;}
+  .detail--umbrella .p-spec{border-top:1px solid rgba(27,23,48,.18);}
+  .detail--umbrella .p-spec li:last-child{color:#5B49B8;font-weight:700;}
+  .detail--umbrella .p-cta{background:#5B49B8;color:#fff;}
+  .detail--umbrella .p-hero{position:relative;overflow:hidden;}
+  .detail--umbrella .p-stage svg{width:min(54vh,90%);height:auto;}
+  .rain{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .45s var(--ease);z-index:0;}
+  .detail--umbrella.raining .rain{opacity:1;}
+  .rain i{position:absolute;top:-12%;width:2px;height:16px;border-radius:2px;background:rgba(91,73,184,.45);
+    animation:drop linear infinite;}
+  @keyframes drop{to{transform:translateY(118vh);}}
+  .detail--umbrella .p-hero>*{position:relative;z-index:1;}
+
+  /* BOOK — portfolio archive */
+  .detail--book{background:#CFC9BC;color:#1b1814;}
+  .detail--book .detail__bar{border-bottom:1px solid rgba(27,24,20,.2);}
+  .book__head{padding:clamp(44px,8vh,96px) clamp(18px,5vw,80px) 26px;display:grid;grid-template-columns:1.2fr 1fr;
+    gap:24px;align-items:end;}
+  .book__head .p-desc{margin:0;justify-self:end;color:#4a4438;}
+  .archive{padding:0 clamp(18px,5vw,80px) 70px;}
+  .archive__row{display:grid;grid-template-columns:54px 1fr auto;gap:18px;align-items:baseline;
+    padding:20px 8px 20px 0;border-top:1px solid rgba(27,24,20,.25);font-family:"IBM Plex Sans KR",sans-serif;
+    transition:padding-left .3s var(--ease),background .3s;cursor:default;}
+  .archive__row:last-child{border-bottom:1px solid rgba(27,24,20,.25);}
+  .archive__row:hover{padding-left:16px;background:rgba(27,24,20,.06);}
+  .archive__no{font-family:"Space Grotesk",sans-serif;font-variant-numeric:tabular-nums;opacity:.55;font-size:14px;}
+  .archive__name{font-weight:700;font-size:clamp(20px,2.6vw,30px);line-height:1;}
+  .archive__name small{display:block;font-weight:300;font-size:13px;opacity:.6;margin-top:8px;}
+  .archive__year{font-family:"Space Grotesk",sans-serif;font-variant-numeric:tabular-nums;opacity:.55;font-size:14px;}
 
   /* ---- toast ---- */
   .toast{position:fixed;left:50%;bottom:clamp(28px,6vh,64px);transform:translate(-50%,14px);z-index:60;
@@ -97,10 +136,11 @@
     font-family:"IBM Plex Sans KR",sans-serif;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.55);
     pointer-events:none;transition:opacity .5s var(--ease);mix-blend-mode:difference;}
 
-  @media (max-width:860px){
-    .gallery__intro{grid-template-columns:1fr;}
-    .gallery__lead{justify-self:start;}
-    .grid{grid-template-columns:1fr;}
+  @media (max-width:820px){
+    .book__head{grid-template-columns:1fr;}
+    .book__head .p-desc{justify-self:start;}
+    .archive__row{grid-template-columns:44px 1fr;gap:12px;}
+    .archive__year{display:none;}
   }
   @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;}}
 </style>
@@ -108,8 +148,8 @@
 <body>
   <main class="collage">
 
-    <!-- A · mint · pills + diamonds · DOOR → fan -->
-    <div class="tile A eye" data-mx="4" data-my="8" data-door="true" data-product="fan" role="button" tabindex="0" aria-label="도깨비 눈 (문)">
+    <!-- A · mint · pills + diamonds · fake -->
+    <div class="tile A eye" data-mx="4" data-my="8" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 56" preserveAspectRatio="xMidYMid meet">
         <defs><clipPath id="aL"><rect x="30" y="11" width="14" height="34" rx="7"/></clipPath><clipPath id="aR"><rect x="56" y="11" width="14" height="34" rx="7"/></clipPath></defs>
         <rect class="sclera" x="30" y="11" width="14" height="34" rx="7" fill="#fff"/>
@@ -136,8 +176,8 @@
       </svg>
     </div>
 
-    <!-- C · black · rects + teal-ring · fake -->
-    <div class="tile C eye" data-mx="3" data-my="7" role="button" tabindex="0" aria-label="도깨비 눈">
+    <!-- C · black · vertical rects + mint-ring (looks up) · DOOR → umbrella -->
+    <div class="tile C eye" data-mx="3" data-my="7" data-biasy="-4" data-door="true" data-product="umbrella" role="button" tabindex="0" aria-label="도깨비 눈 (문) — 우산">
       <svg viewBox="0 0 100 56" preserveAspectRatio="xMidYMid meet">
         <defs><clipPath id="cL"><rect x="30.5" y="10" width="13" height="36" rx="2"/></clipPath><clipPath id="cR"><rect x="56.5" y="10" width="13" height="36" rx="2"/></clipPath></defs>
         <rect class="sclera" x="30.5" y="10" width="13" height="36" rx="2" fill="#fff"/>
@@ -150,8 +190,8 @@
       </svg>
     </div>
 
-    <!-- D · black · domes + teal triangles · fake -->
-    <div class="tile D eye" data-mx="5" data-my="3" role="button" tabindex="0" aria-label="도깨비 눈">
+    <!-- D · black · domes + sharp mint triangles · DOOR → fan -->
+    <div class="tile D eye" data-mx="5" data-my="3" data-door="true" data-product="fan" role="button" tabindex="0" aria-label="도깨비 눈 (문) — 선풍기">
       <svg viewBox="0 0 100 44" preserveAspectRatio="xMidYMid meet">
         <defs><clipPath id="dL"><path d="M8 28 A22 13 0 0 1 52 28 Z"/></clipPath><clipPath id="dR"><path d="M48 28 A22 13 0 0 1 92 28 Z"/></clipPath></defs>
         <path class="sclera" d="M8 28 A22 13 0 0 1 52 28 Z" fill="#fff"/>
@@ -165,7 +205,7 @@
     </div>
 
     <!-- E · gray · giant double eyes · DOOR → book -->
-    <div class="tile E eye" data-mx="10" data-my="14" data-door="true" data-product="book" role="button" tabindex="0" aria-label="도깨비 눈 (문)">
+    <div class="tile E eye" data-mx="10" data-my="14" data-door="true" data-product="book" role="button" tabindex="0" aria-label="도깨비 눈 (문) — 책">
       <svg viewBox="0 0 100 118" preserveAspectRatio="xMidYMid meet">
         <defs><clipPath id="eL"><ellipse cx="25.5" cy="59" rx="24" ry="46"/></clipPath><clipPath id="eR"><ellipse cx="74.5" cy="59" rx="24" ry="46"/></clipPath></defs>
         <ellipse class="sclera" cx="25.5" cy="59" rx="24" ry="46" fill="#fff"/>
@@ -220,8 +260,8 @@
       </svg>
     </div>
 
-    <!-- I · darkgray · capsules + teal dots · DOOR → umbrella -->
-    <div class="tile I eye" data-mx="12" data-my="2" data-door="true" data-product="umbrella" role="button" tabindex="0" aria-label="도깨비 눈 (문)">
+    <!-- I · darkgray · capsules + teal dots · fake -->
+    <div class="tile I eye" data-mx="12" data-my="2" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 141" preserveAspectRatio="xMidYMid meet">
         <defs><clipPath id="iL"><rect x="9" y="64.5" width="36" height="13" rx="6.5"/></clipPath><clipPath id="iR"><rect x="55" y="64.5" width="36" height="13" rx="6.5"/></clipPath></defs>
         <rect class="sclera" x="9" y="64.5" width="36" height="13" rx="6.5" fill="#fff"/>
@@ -240,35 +280,89 @@
 
   <div class="veil" id="veil"></div>
 
-  <!-- ===== product gallery ===== -->
-  <section class="gallery" id="gallery" aria-hidden="true">
-    <header class="gallery__bar">
-      <button class="backbtn" id="backbtn" type="button"><span class="backbtn__arrow">←</span> 눈으로 돌아가기</button>
-      <span class="gallery__brand">DOKI / 깨어난 물건들</span>
+  <!-- ===== FAN detail (mint & black) ===== -->
+  <section class="detail detail--fan" id="detail-fan" aria-hidden="true">
+    <header class="detail__bar">
+      <button class="back" data-close type="button"><i>←</i> 눈으로 돌아가기</button>
+      <span class="detail__brand">DOKI · 01 / 바람</span>
     </header>
-    <div class="gallery__intro">
-      <h2 class="gallery__title">숨어 있던<br />세 물건</h2>
-      <p class="gallery__lead">도깨비는 쓸모를 잃은 물건에 깃들어 다시 눈을 뜹니다.<br />각 물건에는 한때의 쓰임과 새 이야기가 함께 담겨 있습니다.</p>
+    <div class="p-hero">
+      <div class="p-copy">
+        <p class="p-kicker">바람을 뿜는 도깨비</p>
+        <h1 class="p-title">선풍기<em>DOKI FAN</em></h1>
+        <p class="p-desc">멈춰 있던 여름의 바람을 기억하는 물건. 날카로운 민트빛 눈빛으로 잊고 지낸 계절의 공기를 다시 불러옵니다. 세 개의 날이 돌 때, 도깨비의 시원한 숨이 방을 채웁니다.</p>
+        <ul class="p-spec">
+          <li>지름 320mm · 3단 풍속 · DC 모터</li>
+          <li>리퍼브 메탈 케이지 / 73dB↓ 저소음</li>
+          <li>₩ 89,000</li>
+        </ul>
+        <button class="p-cta" id="fanCta" type="button">바람 켜기</button>
+      </div>
+      <div class="p-stage">
+        <svg viewBox="0 0 200 200" aria-label="선풍기">
+          <circle cx="100" cy="100" r="92" fill="none" stroke="#3DAB9B" stroke-width="4"/>
+          <circle cx="100" cy="100" r="68" fill="none" stroke="#3DAB9B" stroke-width="1.5" opacity=".5"/>
+          <circle cx="100" cy="100" r="40" fill="none" stroke="#3DAB9B" stroke-width="1.5" opacity=".35"/>
+          <g class="blades" fill="#3DAB9B">
+            <path d="M100 100 C 64 50 150 42 122 96 C 114 100 107 100 100 100 Z"/>
+            <g transform="rotate(120 100 100)"><path d="M100 100 C 64 50 150 42 122 96 C 114 100 107 100 100 100 Z"/></g>
+            <g transform="rotate(240 100 100)"><path d="M100 100 C 64 50 150 42 122 96 C 114 100 107 100 100 100 Z"/></g>
+          </g>
+          <circle cx="100" cy="100" r="15" fill="#EAF3F0"/>
+          <circle cx="100" cy="100" r="6" fill="#0E0E0E"/>
+        </svg>
+      </div>
     </div>
-    <div class="grid">
-      <article class="card" id="card-fan" style="--tint:#E9F0EC;--ink2:#2E7D5B">
-        <div class="card__media"><img src="assets/fan.svg" alt="선풍기" /></div>
-        <div class="card__meta"><span class="card__no">01 — 바람</span><h3 class="card__name">선풍기</h3>
-        <p class="card__desc">멈춰 있던 여름의 바람을 기억하는 물건. 날개를 돌리면 잊고 지낸 계절의 공기가 다시 흐릅니다.</p>
-        <ul class="card__spec"><li>지름 320mm · 3단 풍속</li><li>리퍼브 메탈 케이지</li><li>₩ 89,000</li></ul></div>
-      </article>
-      <article class="card" id="card-umbrella" style="--tint:#EDEAF4;--ink2:#5B49B8">
-        <div class="card__media"><img src="assets/umbrella.svg" alt="우산" /></div>
-        <div class="card__meta"><span class="card__no">02 — 비</span><h3 class="card__name">우산</h3>
-        <p class="card__desc">머리 위로 펼쳐지는 작은 지붕. 비 오는 날에만 깨어나 당신을 가려 주는 도깨비의 우산입니다.</p>
-        <ul class="card__spec"><li>8살 자동 우산 · 지름 1,050mm</li><li>발수 리사이클 캐노피</li><li>₩ 42,000</li></ul></div>
-      </article>
-      <article class="card" id="card-book" style="--tint:#F3ECE2;--ink2:#C0563B">
-        <div class="card__media"><img src="assets/book.svg" alt="책" /></div>
-        <div class="card__meta"><span class="card__no">03 — 이야기</span><h3 class="card__name">책</h3>
-        <p class="card__desc">덮여 있던 페이지를 펼치면 잠든 이야기가 눈을 뜹니다. 읽는 사람마다 다른 결말을 속삭입니다.</p>
-        <ul class="card__spec"><li>양장 · 240페이지</li><li>도깨비 설화 모음</li><li>₩ 24,000</li></ul></div>
-      </article>
+  </section>
+
+  <!-- ===== UMBRELLA detail (clean light) ===== -->
+  <section class="detail detail--umbrella" id="detail-umbrella" aria-hidden="true">
+    <header class="detail__bar">
+      <button class="back" data-close type="button"><i>←</i> 눈으로 돌아가기</button>
+      <span class="detail__brand">DOKI · 02 / 비</span>
+    </header>
+    <div class="p-hero">
+      <div class="rain" id="umbRain" aria-hidden="true"></div>
+      <div class="p-copy">
+        <p class="p-kicker">하늘을 올려다보는 도깨비</p>
+        <h1 class="p-title">우산<em>DOKI UMBRELLA</em></h1>
+        <p class="p-desc">비가 오는지 가만히 하늘을 살피던 눈빛. 머리 위로 펼쳐지는 작은 지붕이 되어, 비 오는 날에만 조용히 깨어나 당신을 가려 줍니다.</p>
+        <ul class="p-spec">
+          <li>8살 자동 우산 · 지름 1,050mm</li>
+          <li>발수 리사이클 캐노피 / UPF 50+</li>
+          <li>₩ 42,000</li>
+        </ul>
+        <button class="p-cta" id="umbCta" type="button">비 내리기</button>
+      </div>
+      <div class="p-stage">
+        <svg viewBox="0 0 200 250" aria-label="우산">
+          <path d="M100 34 C 44 34 22 104 20 118 C 52 98 70 98 100 118 C 130 98 148 98 180 118 C 178 104 156 34 100 34 Z" fill="#5B49B8"/>
+          <path d="M100 34 C 70 70 66 100 70 118 C 84 104 90 104 100 118 Z" fill="#6E5DD6"/>
+          <path d="M100 34 C 130 70 134 100 130 118 C 116 104 110 104 100 118 Z" fill="#6E5DD6"/>
+          <path d="M100 30 L100 196" stroke="#1b1730" stroke-width="5" stroke-linecap="round"/>
+          <path d="M100 196 C 100 214 118 214 118 198" fill="none" stroke="#1b1730" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="100" cy="26" r="4.5" fill="#1b1730"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BOOK detail (portfolio archive) ===== -->
+  <section class="detail detail--book" id="detail-book" aria-hidden="true">
+    <header class="detail__bar">
+      <button class="back" data-close type="button"><i>←</i> 눈으로 돌아가기</button>
+      <span class="detail__brand">DOKI · 03 / 이야기</span>
+    </header>
+    <div class="book__head">
+      <h1 class="p-title">책<em>DOKI ARCHIVE</em></h1>
+      <p class="p-desc">가장 거대하고 압도적인 눈. 지식과 수많은 기억이 가득 차 넘치는 도깨비입니다. 덮여 있던 페이지를 펼치면, 잠든 이야기들이 차례로 눈을 뜹니다.</p>
+    </div>
+    <div class="archive">
+      <div class="archive__row"><span class="archive__no">001</span><span class="archive__name">불을 빌려준 부지깽이<small>아궁이 곁에서 백 년을 머문 물건의 기록</small></span><span class="archive__year">壹</span></div>
+      <div class="archive__row"><span class="archive__no">002</span><span class="archive__name">길을 외운 짚신<small>천 리를 걸어 돌아온 발자국의 지도</small></span><span class="archive__year">貳</span></div>
+      <div class="archive__row"><span class="archive__no">003</span><span class="archive__name">소원을 삼킨 항아리<small>장독대에 묻어 둔 말들의 목록</small></span><span class="archive__year">參</span></div>
+      <div class="archive__row"><span class="archive__no">004</span><span class="archive__name">밤을 지킨 등잔<small>꺼지지 않으려 애쓴 작은 불빛의 일기</small></span><span class="archive__year">肆</span></div>
+      <div class="archive__row"><span class="archive__no">005</span><span class="archive__name">이름을 잊은 거울<small>비춘 얼굴을 모두 기억하는 표면의 증언</small></span><span class="archive__year">伍</span></div>
     </div>
   </section>
 
