@@ -4,32 +4,40 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DOKI — eyes wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --mint:#3DAB9B;
-    --ivory:#EDE7D9;
-    --black:#131313;
-    --darkgray:#33312A;
-    --gray:#B3ADA0;
-    --white:#FFFFFF;
+    --mint:#3DAB9B; --ivory:#EDE7D9; --black:#131313;
+    --darkgray:#33312A; --gray:#B3ADA0; --white:#FFFFFF;
+    --ease:cubic-bezier(.16,.84,.30,1);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{width:100%;height:100%;overflow:hidden;background:var(--black);}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--black);
+    font-family:"Space Grotesk","IBM Plex Sans KR",system-ui,sans-serif;}
 
-  /* asymmetric full-bleed grid — column / row lines sit on the
-     block boundaries read off the reference image */
+  /* ---- asymmetric full-bleed grid ---- */
   .collage{
-    width:100vw;height:100vh;
-    display:grid;
-    /* x lines: 0 21 33.33 40 66.67 72 88 100 */
-    grid-template-columns:21fr 12.33fr 6.67fr 26.67fr 5.33fr 16fr 12fr;
+    width:100vw;height:100vh;display:grid;
+    /* x lines: 0 21 33.33 40 66.67 72 80 100 */
+    grid-template-columns:21fr 12.33fr 6.67fr 26.67fr 5.33fr 8fr 20fr;
     /* y lines: 0 33 59 64 70 100 */
     grid-template-rows:33fr 26fr 5fr 6fr 30fr;
   }
   .tile{position:relative;overflow:hidden;}
   .tile svg{width:100%;height:100%;display:block;}
+  .eye{cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .eye svg{transition:transform .4s var(--ease);will-change:transform;}
+  .eye:hover svg{transform:scale(1.015);}
+  /* real doors lift a touch more on hover */
+  .eye[data-door="true"]:hover{filter:brightness(1.04);}
+  .eye[data-door="true"]:hover svg{transform:scale(1.03);}
 
-  /* grid placement: row-start / col-start / row-end / col-end */
+  .gaze{will-change:transform;}
+  .blinker{transform-box:fill-box;transform-origin:center;transform:scaleY(0);}
+
+  /* placement: row-start / col-start / row-end / col-end */
   .A{grid-area:1/1/2/3;background:var(--mint);}
   .B{grid-area:1/3/2/5;background:var(--ivory);}
   .C{grid-area:1/5/2/8;background:var(--black);}
@@ -41,107 +49,237 @@
   .I{grid-area:5/7/6/8;background:var(--darkgray);}
   .fill1{grid-area:2/6/6/7;background:var(--black);}
   .fill2{grid-area:3/7/5/8;background:var(--black);}
+
+  /* ---- zoom veil ---- */
+  .veil{position:fixed;z-index:40;top:0;left:0;width:40px;height:40px;border-radius:50%;
+    background:var(--black);transform:translate(-50%,-50%) scale(0);pointer-events:none;}
+
+  /* ---- product gallery ---- */
+  .gallery{position:fixed;inset:0;z-index:50;background:var(--ivory);overflow-y:auto;
+    opacity:0;visibility:hidden;color:var(--black);padding-bottom:40px;}
+  .gallery.is-open{visibility:visible;}
+  .gallery__bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(16px,2.4vw,28px) clamp(18px,4vw,56px);background:rgba(237,231,217,.85);
+    backdrop-filter:blur(8px);border-bottom:1px solid rgba(20,17,14,.14);}
+  .backbtn{font:inherit;font-size:13px;color:var(--black);background:none;border:none;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;font-family:"IBM Plex Sans KR",sans-serif;}
+  .backbtn__arrow{transition:transform .3s var(--ease);display:inline-block;}
+  .backbtn:hover .backbtn__arrow{transform:translateX(-5px);}
+  .gallery__brand{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#6b655c;}
+  .gallery__intro{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:end;
+    padding:clamp(48px,9vh,120px) clamp(18px,4vw,56px) clamp(36px,6vh,64px);border-bottom:1px solid rgba(20,17,14,.14);}
+  .gallery__title{font-family:"Black Han Sans",sans-serif;font-size:clamp(48px,8vw,112px);line-height:.92;margin:0;}
+  .gallery__lead{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;font-size:clamp(14px,1.2vw,16px);
+    line-height:1.75;color:#6b655c;margin:0;max-width:42ch;justify-self:end;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.6vw,44px);
+    padding:clamp(36px,6vh,72px) clamp(18px,4vw,56px);}
+  .card{display:flex;flex-direction:column;}
+  .card__media{background:var(--tint,#eee);border:1px solid rgba(20,17,14,.14);border-radius:4px;
+    aspect-ratio:4/5;overflow:hidden;margin-bottom:22px;}
+  .card__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s var(--ease);}
+  .card:hover .card__media img{transform:scale(1.04);}
+  .card__no{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2,#6b655c);font-weight:500;}
+  .card__name{font-family:"IBM Plex Sans KR",sans-serif;font-weight:700;font-size:clamp(26px,2.6vw,38px);margin:10px 0 14px;line-height:1;}
+  .card__desc{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;font-size:14.5px;line-height:1.72;color:#6b655c;margin:0 0 20px;}
+  .card__spec{list-style:none;margin:auto 0 0;padding:16px 0 0;border-top:1px solid rgba(20,17,14,.14);
+    display:flex;flex-direction:column;gap:6px;font-size:13px;}
+  .card__spec li:last-child{font-weight:700;margin-top:2px;}
+  .card.is-focus{animation:focuspulse 1.4s var(--ease);}
+  @keyframes focuspulse{0%{box-shadow:0 0 0 0 rgba(20,17,14,0);}30%{box-shadow:0 0 0 3px var(--ink2,var(--black));}100%{box-shadow:0 0 0 0 rgba(20,17,14,0);}}
+
+  /* ---- toast ---- */
+  .toast{position:fixed;left:50%;bottom:clamp(28px,6vh,64px);transform:translate(-50%,14px);z-index:60;
+    background:var(--white);color:var(--black);font-family:"IBM Plex Sans KR",sans-serif;font-size:14px;
+    padding:12px 22px;border-radius:999px;opacity:0;pointer-events:none;white-space:nowrap;
+    box-shadow:0 8px 30px rgba(0,0,0,.25);transition:opacity .35s var(--ease),transform .35s var(--ease);}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+
+  /* ---- tiny helper line ---- */
+  .hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;
+    font-family:"IBM Plex Sans KR",sans-serif;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.55);
+    pointer-events:none;transition:opacity .5s var(--ease);mix-blend-mode:difference;}
+
+  @media (max-width:860px){
+    .gallery__intro{grid-template-columns:1fr;}
+    .gallery__lead{justify-self:start;}
+    .grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;}}
 </style>
 </head>
 <body>
   <main class="collage">
 
-    <!-- A · mint · white pills + black diamonds -->
-    <div class="tile A">
+    <!-- A · mint · pills + diamonds · DOOR → fan -->
+    <div class="tile A eye" data-mx="4" data-my="8" data-door="true" data-product="fan" role="button" tabindex="0" aria-label="도깨비 눈 (문)">
       <svg viewBox="0 0 100 56" preserveAspectRatio="xMidYMid meet">
-        <rect x="30" y="11" width="14" height="34" rx="7" fill="#fff"/>
-        <rect x="56" y="11" width="14" height="34" rx="7" fill="#fff"/>
-        <rect x="31.5" y="22.5" width="11" height="11" fill="#131313" transform="rotate(45 37 28)"/>
-        <rect x="57.5" y="22.5" width="11" height="11" fill="#131313" transform="rotate(45 63 28)"/>
+        <defs><clipPath id="aL"><rect x="30" y="11" width="14" height="34" rx="7"/></clipPath><clipPath id="aR"><rect x="56" y="11" width="14" height="34" rx="7"/></clipPath></defs>
+        <rect class="sclera" x="30" y="11" width="14" height="34" rx="7" fill="#fff"/>
+        <rect class="sclera" x="56" y="11" width="14" height="34" rx="7" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#aL)"><rect class="pupil" x="31.5" y="22.5" width="11" height="11" fill="#131313" transform="rotate(45 37 28)"/></g>
+          <g clip-path="url(#aR)"><rect class="pupil" x="57.5" y="22.5" width="11" height="11" fill="#131313" transform="rotate(45 63 28)"/></g>
+        </g>
+        <g class="blinker"><rect x="30" y="11" width="14" height="34" rx="7" fill="#3DAB9B" clip-path="url(#aL)"/><rect x="56" y="11" width="14" height="34" rx="7" fill="#3DAB9B" clip-path="url(#aR)"/></g>
       </svg>
     </div>
 
-    <!-- B · ivory · white ellipses + black barrels -->
-    <div class="tile B">
+    <!-- B · ivory · ellipses + barrels · fake -->
+    <div class="tile B eye" data-mx="8" data-my="3" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 56" preserveAspectRatio="xMidYMid meet">
-        <ellipse cx="28" cy="28" rx="21" ry="13" fill="#fff"/>
-        <ellipse cx="72" cy="28" rx="21" ry="13" fill="#fff"/>
-        <rect x="20" y="13" width="16" height="30" rx="5" fill="#131313"/>
-        <rect x="64" y="13" width="16" height="30" rx="5" fill="#131313"/>
+        <defs><clipPath id="bL"><ellipse cx="28" cy="28" rx="21" ry="13"/></clipPath><clipPath id="bR"><ellipse cx="72" cy="28" rx="21" ry="13"/></clipPath></defs>
+        <ellipse class="sclera" cx="28" cy="28" rx="21" ry="13" fill="#fff"/>
+        <ellipse class="sclera" cx="72" cy="28" rx="21" ry="13" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#bL)"><rect class="pupil" x="20" y="13" width="16" height="30" rx="5" fill="#131313"/></g>
+          <g clip-path="url(#bR)"><rect class="pupil" x="64" y="13" width="16" height="30" rx="5" fill="#131313"/></g>
+        </g>
+        <g class="blinker"><rect x="7" y="15" width="42" height="26" fill="#EDE7D9" clip-path="url(#bL)"/><rect x="51" y="15" width="42" height="26" fill="#EDE7D9" clip-path="url(#bR)"/></g>
       </svg>
     </div>
 
-    <!-- C · black · white rects + teal-ring pupils -->
-    <div class="tile C">
+    <!-- C · black · rects + teal-ring · fake -->
+    <div class="tile C eye" data-mx="3" data-my="7" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 56" preserveAspectRatio="xMidYMid meet">
-        <rect x="30.5" y="10" width="13" height="36" rx="2" fill="#fff"/>
-        <rect x="56.5" y="10" width="13" height="36" rx="2" fill="#fff"/>
-        <circle cx="37" cy="27" r="7.5" fill="#3DAB9B"/>
-        <circle cx="63" cy="27" r="7.5" fill="#3DAB9B"/>
-        <circle cx="37" cy="27" r="4" fill="#131313"/>
-        <circle cx="63" cy="27" r="4" fill="#131313"/>
+        <defs><clipPath id="cL"><rect x="30.5" y="10" width="13" height="36" rx="2"/></clipPath><clipPath id="cR"><rect x="56.5" y="10" width="13" height="36" rx="2"/></clipPath></defs>
+        <rect class="sclera" x="30.5" y="10" width="13" height="36" rx="2" fill="#fff"/>
+        <rect class="sclera" x="56.5" y="10" width="13" height="36" rx="2" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#cL)"><circle cx="37" cy="27" r="7.5" fill="#3DAB9B"/><circle class="pupil" cx="37" cy="27" r="4" fill="#131313"/></g>
+          <g clip-path="url(#cR)"><circle cx="63" cy="27" r="7.5" fill="#3DAB9B"/><circle class="pupil" cx="63" cy="27" r="4" fill="#131313"/></g>
+        </g>
+        <g class="blinker"><rect x="30.5" y="10" width="13" height="36" rx="2" fill="#131313" clip-path="url(#cL)"/><rect x="56.5" y="10" width="13" height="36" rx="2" fill="#131313" clip-path="url(#cR)"/></g>
       </svg>
     </div>
 
-    <!-- D · black · white domes + teal triangles -->
-    <div class="tile D">
+    <!-- D · black · domes + teal triangles · fake -->
+    <div class="tile D eye" data-mx="5" data-my="3" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 44" preserveAspectRatio="xMidYMid meet">
-        <path d="M8 28 A22 13 0 0 1 52 28 Z" fill="#fff"/>
-        <path d="M48 28 A22 13 0 0 1 92 28 Z" fill="#fff"/>
-        <polygon points="24,16 36,16 30,28" fill="#3DAB9B"/>
-        <polygon points="64,16 76,16 70,28" fill="#3DAB9B"/>
+        <defs><clipPath id="dL"><path d="M8 28 A22 13 0 0 1 52 28 Z"/></clipPath><clipPath id="dR"><path d="M48 28 A22 13 0 0 1 92 28 Z"/></clipPath></defs>
+        <path class="sclera" d="M8 28 A22 13 0 0 1 52 28 Z" fill="#fff"/>
+        <path class="sclera" d="M48 28 A22 13 0 0 1 92 28 Z" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#dL)"><polygon class="pupil" points="24,16 36,16 30,28" fill="#3DAB9B"/></g>
+          <g clip-path="url(#dR)"><polygon class="pupil" points="64,16 76,16 70,28" fill="#3DAB9B"/></g>
+        </g>
+        <g class="blinker"><path d="M8 28 A22 13 0 0 1 52 28 Z" fill="#131313" clip-path="url(#dL)"/><path d="M48 28 A22 13 0 0 1 92 28 Z" fill="#131313" clip-path="url(#dR)"/></g>
       </svg>
     </div>
 
-    <!-- E · gray · the giant double eyes -->
-    <div class="tile E">
+    <!-- E · gray · giant double eyes · DOOR → book -->
+    <div class="tile E eye" data-mx="10" data-my="14" data-door="true" data-product="book" role="button" tabindex="0" aria-label="도깨비 눈 (문)">
       <svg viewBox="0 0 100 118" preserveAspectRatio="xMidYMid meet">
-        <ellipse cx="25.5" cy="59" rx="24" ry="46" fill="#fff"/>
-        <ellipse cx="74.5" cy="59" rx="24" ry="46" fill="#fff"/>
-        <ellipse cx="25.5" cy="68" rx="7" ry="16" fill="#131313"/>
-        <ellipse cx="74.5" cy="68" rx="7" ry="16" fill="#131313"/>
+        <defs><clipPath id="eL"><ellipse cx="25.5" cy="59" rx="24" ry="46"/></clipPath><clipPath id="eR"><ellipse cx="74.5" cy="59" rx="24" ry="46"/></clipPath></defs>
+        <ellipse class="sclera" cx="25.5" cy="59" rx="24" ry="46" fill="#fff"/>
+        <ellipse class="sclera" cx="74.5" cy="59" rx="24" ry="46" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#eL)"><ellipse class="pupil" cx="25.5" cy="68" rx="7" ry="16" fill="#131313"/></g>
+          <g clip-path="url(#eR)"><ellipse class="pupil" cx="74.5" cy="68" rx="7" ry="16" fill="#131313"/></g>
+        </g>
+        <g class="blinker"><rect x="1.5" y="13" width="48" height="92" fill="#B3ADA0" clip-path="url(#eL)"/><rect x="50.5" y="13" width="48" height="92" fill="#B3ADA0" clip-path="url(#eR)"/></g>
       </svg>
     </div>
 
-    <!-- F · mint · almonds + diamonds -->
-    <div class="tile F">
+    <!-- F · mint · almonds + diamonds · fake -->
+    <div class="tile F eye" data-mx="8" data-my="4" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 122" preserveAspectRatio="xMidYMid meet">
-        <path d="M8 61 Q28 46 48 61 Q28 76 8 61 Z" fill="#fff"/>
-        <path d="M52 61 Q72 46 92 61 Q72 76 52 61 Z" fill="#fff"/>
-        <rect x="22" y="55" width="12" height="12" fill="#131313" transform="rotate(45 28 61)"/>
-        <rect x="66" y="55" width="12" height="12" fill="#131313" transform="rotate(45 72 61)"/>
+        <defs><clipPath id="fL"><path d="M8 61 Q28 46 48 61 Q28 76 8 61 Z"/></clipPath><clipPath id="fR"><path d="M52 61 Q72 46 92 61 Q72 76 52 61 Z"/></clipPath></defs>
+        <path class="sclera" d="M8 61 Q28 46 48 61 Q28 76 8 61 Z" fill="#fff"/>
+        <path class="sclera" d="M52 61 Q72 46 92 61 Q72 76 52 61 Z" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#fL)"><rect class="pupil" x="22" y="55" width="12" height="12" fill="#131313" transform="rotate(45 28 61)"/></g>
+          <g clip-path="url(#fR)"><rect class="pupil" x="66" y="55" width="12" height="12" fill="#131313" transform="rotate(45 72 61)"/></g>
+        </g>
+        <g class="blinker"><path d="M8 61 Q28 46 48 61 Q28 76 8 61 Z" fill="#3DAB9B" clip-path="url(#fL)"/><path d="M52 61 Q72 46 92 61 Q72 76 52 61 Z" fill="#3DAB9B" clip-path="url(#fR)"/></g>
       </svg>
     </div>
 
-    <!-- G · black · half-bowl eyes (white rim + teal) -->
-    <div class="tile G">
+    <!-- G · black · teal bowls · fake -->
+    <div class="tile G eye" data-mx="3" data-my="2" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 96" preserveAspectRatio="xMidYMid meet">
-        <path d="M-2 52 A24 24 0 0 1 46 52 Z" fill="#fff"/>
-        <path d="M4 52 A18 18 0 0 1 40 52 Z" fill="#3DAB9B"/>
-        <path d="M48 52 A24 24 0 0 1 96 52 Z" fill="#fff"/>
-        <path d="M54 52 A18 18 0 0 1 90 52 Z" fill="#3DAB9B"/>
+        <defs><clipPath id="gL"><path d="M-2 52 A24 24 0 0 1 46 52 Z"/></clipPath><clipPath id="gR"><path d="M48 52 A24 24 0 0 1 96 52 Z"/></clipPath></defs>
+        <path class="sclera" d="M-2 52 A24 24 0 0 1 46 52 Z" fill="#fff"/>
+        <path class="sclera" d="M48 52 A24 24 0 0 1 96 52 Z" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#gL)"><path class="pupil" d="M4 52 A18 18 0 0 1 40 52 Z" fill="#3DAB9B"/></g>
+          <g clip-path="url(#gR)"><path class="pupil" d="M54 52 A18 18 0 0 1 90 52 Z" fill="#3DAB9B"/></g>
+        </g>
+        <g class="blinker"><path d="M-2 52 A24 24 0 0 1 46 52 Z" fill="#131313" clip-path="url(#gL)"/><path d="M48 52 A24 24 0 0 1 96 52 Z" fill="#131313" clip-path="url(#gR)"/></g>
       </svg>
     </div>
 
-    <!-- H · ivory · white eggs + small black pupils -->
-    <div class="tile H">
+    <!-- H · ivory · eggs + small pupils · fake -->
+    <div class="tile H eye" data-mx="7" data-my="10" role="button" tabindex="0" aria-label="도깨비 눈">
       <svg viewBox="0 0 100 106" preserveAspectRatio="xMidYMid meet">
-        <ellipse cx="33" cy="53" rx="16" ry="27" fill="#fff"/>
-        <ellipse cx="67" cy="53" rx="16" ry="27" fill="#fff"/>
-        <circle cx="36" cy="47" r="5" fill="#131313"/>
-        <circle cx="64" cy="47" r="5" fill="#131313"/>
+        <defs><clipPath id="hL"><ellipse cx="33" cy="53" rx="16" ry="27"/></clipPath><clipPath id="hR"><ellipse cx="67" cy="53" rx="16" ry="27"/></clipPath></defs>
+        <ellipse class="sclera" cx="33" cy="53" rx="16" ry="27" fill="#fff"/>
+        <ellipse class="sclera" cx="67" cy="53" rx="16" ry="27" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#hL)"><circle class="pupil" cx="33" cy="50" r="5" fill="#131313"/></g>
+          <g clip-path="url(#hR)"><circle class="pupil" cx="67" cy="50" r="5" fill="#131313"/></g>
+        </g>
+        <g class="blinker"><rect x="17" y="26" width="32" height="54" fill="#EDE7D9" clip-path="url(#hL)"/><rect x="51" y="26" width="32" height="54" fill="#EDE7D9" clip-path="url(#hR)"/></g>
       </svg>
     </div>
 
-    <!-- I · darkgray · capsule bars + teal dots -->
-    <div class="tile I">
+    <!-- I · darkgray · capsules + teal dots · DOOR → umbrella -->
+    <div class="tile I eye" data-mx="12" data-my="2" data-door="true" data-product="umbrella" role="button" tabindex="0" aria-label="도깨비 눈 (문)">
       <svg viewBox="0 0 100 141" preserveAspectRatio="xMidYMid meet">
-        <rect x="9" y="64.5" width="36" height="13" rx="6.5" fill="#fff"/>
-        <rect x="55" y="64.5" width="36" height="13" rx="6.5" fill="#fff"/>
-        <circle cx="16" cy="71" r="6.5" fill="#3DAB9B"/>
-        <circle cx="62" cy="71" r="6.5" fill="#3DAB9B"/>
+        <defs><clipPath id="iL"><rect x="9" y="64.5" width="36" height="13" rx="6.5"/></clipPath><clipPath id="iR"><rect x="55" y="64.5" width="36" height="13" rx="6.5"/></clipPath></defs>
+        <rect class="sclera" x="9" y="64.5" width="36" height="13" rx="6.5" fill="#fff"/>
+        <rect class="sclera" x="55" y="64.5" width="36" height="13" rx="6.5" fill="#fff"/>
+        <g class="gaze">
+          <g clip-path="url(#iL)"><circle class="pupil" cx="16" cy="71" r="6.5" fill="#3DAB9B"/></g>
+          <g clip-path="url(#iR)"><circle class="pupil" cx="62" cy="71" r="6.5" fill="#3DAB9B"/></g>
+        </g>
+        <g class="blinker"><rect x="9" y="64.5" width="36" height="13" rx="6.5" fill="#33312A" clip-path="url(#iL)"/><rect x="55" y="64.5" width="36" height="13" rx="6.5" fill="#33312A" clip-path="url(#iR)"/></g>
       </svg>
     </div>
 
-    <!-- black filler regions so the grid is gap-free -->
+    <!-- black filler regions -->
     <div class="tile fill1"></div>
     <div class="tile fill2"></div>
-
   </main>
+
+  <p class="hint" id="hint">눈을 클릭해 보세요 — 셋은 진짜 문, 나머지는 장난 👁</p>
+
+  <div class="veil" id="veil"></div>
+
+  <!-- ===== product gallery ===== -->
+  <section class="gallery" id="gallery" aria-hidden="true">
+    <header class="gallery__bar">
+      <button class="backbtn" id="backbtn" type="button"><span class="backbtn__arrow">←</span> 눈으로 돌아가기</button>
+      <span class="gallery__brand">DOKI / 깨어난 물건들</span>
+    </header>
+    <div class="gallery__intro">
+      <h2 class="gallery__title">숨어 있던<br />세 물건</h2>
+      <p class="gallery__lead">도깨비는 쓸모를 잃은 물건에 깃들어 다시 눈을 뜹니다.<br />각 물건에는 한때의 쓰임과 새 이야기가 함께 담겨 있습니다.</p>
+    </div>
+    <div class="grid">
+      <article class="card" id="card-fan" style="--tint:#E9F0EC;--ink2:#2E7D5B">
+        <div class="card__media"><img src="assets/fan.svg" alt="선풍기" /></div>
+        <div class="card__meta"><span class="card__no">01 — 바람</span><h3 class="card__name">선풍기</h3>
+        <p class="card__desc">멈춰 있던 여름의 바람을 기억하는 물건. 날개를 돌리면 잊고 지낸 계절의 공기가 다시 흐릅니다.</p>
+        <ul class="card__spec"><li>지름 320mm · 3단 풍속</li><li>리퍼브 메탈 케이지</li><li>₩ 89,000</li></ul></div>
+      </article>
+      <article class="card" id="card-umbrella" style="--tint:#EDEAF4;--ink2:#5B49B8">
+        <div class="card__media"><img src="assets/umbrella.svg" alt="우산" /></div>
+        <div class="card__meta"><span class="card__no">02 — 비</span><h3 class="card__name">우산</h3>
+        <p class="card__desc">머리 위로 펼쳐지는 작은 지붕. 비 오는 날에만 깨어나 당신을 가려 주는 도깨비의 우산입니다.</p>
+        <ul class="card__spec"><li>8살 자동 우산 · 지름 1,050mm</li><li>발수 리사이클 캐노피</li><li>₩ 42,000</li></ul></div>
+      </article>
+      <article class="card" id="card-book" style="--tint:#F3ECE2;--ink2:#C0563B">
+        <div class="card__media"><img src="assets/book.svg" alt="책" /></div>
+        <div class="card__meta"><span class="card__no">03 — 이야기</span><h3 class="card__name">책</h3>
+        <p class="card__desc">덮여 있던 페이지를 펼치면 잠든 이야기가 눈을 뜹니다. 읽는 사람마다 다른 결말을 속삭입니다.</p>
+        <ul class="card__spec"><li>양장 · 240페이지</li><li>도깨비 설화 모음</li><li>₩ 24,000</li></ul></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/eye2.js"></script>
 </body>
 </html>
