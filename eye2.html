@@ -121,6 +121,27 @@
   .detail--book .p-eyebrow{color:#8a4631;}
   .detail--book .p-sub{font-size:clamp(18px,2.3vw,30px);max-width:26ch;}
 
+  /* BRAND STORY — night & mint, Korean folklore world */
+  .detail--brand{background:#0E1A17;color:#EAF3F0;--rule:rgba(234,243,240,.16);--hl:#3DAB9B;--hlbg:rgba(61,171,155,.2);}
+  .detail--brand .p-eyebrow{color:#3DAB9B;}
+  .detail--brand .p-sub{font-family:"Space Grotesk",sans-serif;letter-spacing:.18em;text-transform:uppercase;
+    font-size:clamp(13px,1.5vw,17px);opacity:.7;}
+  .brand-eye{width:min(180px,60%);height:auto;margin-top:6px;}
+  .brand-philo{padding:clamp(30px,5vh,60px) clamp(18px,6vw,96px) clamp(60px,10vh,120px);border-top:1px solid var(--rule);}
+  .philo-lead{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;line-height:1.6;
+    font-size:clamp(19px,2.1vw,30px);max-width:24ch;margin:0;}
+  .philo-lead .hl{color:#fff;}
+  .equation{display:flex;align-items:center;flex-wrap:wrap;gap:12px clamp(12px,1.6vw,18px);
+    margin:clamp(30px,6vh,56px) 0;}
+  .eq-chip{border:1.5px solid var(--rule);border-radius:999px;padding:12px 22px;
+    font-family:"IBM Plex Sans KR",sans-serif;font-weight:500;font-size:clamp(13px,1.5vw,18px);white-space:nowrap;}
+  .eq-chip--hl{background:var(--hl);color:#0E1A17;border-color:var(--hl);font-weight:700;}
+  .eq-op{font-family:"Space Grotesk",sans-serif;font-size:clamp(20px,2.4vw,30px);color:var(--hl);font-weight:700;}
+  .philo-close{font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;line-height:1.85;
+    font-size:clamp(16px,1.6vw,21px);max-width:46ch;margin:0;opacity:.95;}
+  .brand-foot{margin:clamp(40px,7vh,72px) 0 0;font-family:"Space Grotesk",sans-serif;font-size:12px;
+    letter-spacing:.2em;text-transform:uppercase;opacity:.5;}
+
   /* ---- toast ---- */
   .toast{position:fixed;left:50%;bottom:clamp(28px,6vh,64px);transform:translate(-50%,14px);z-index:60;
     background:var(--white);color:var(--black);font-family:"IBM Plex Sans KR",sans-serif;font-size:14px;
@@ -223,8 +244,8 @@
       </svg>
     </div>
 
-    <!-- G · black · teal bowls · fake -->
-    <div class="tile G eye" data-mx="3" data-my="2" role="button" tabindex="0" aria-label="도깨비 눈">
+    <!-- G · black · teal bowls (반원) · HIDDEN DOOR → brand story -->
+    <div class="tile G eye" data-mx="3" data-my="2" data-door="true" data-product="brand" role="button" tabindex="0" aria-label="도깨비 눈 (숨은 문) — 브랜드 이야기">
       <svg viewBox="0 0 100 96" preserveAspectRatio="xMidYMid meet">
         <defs><clipPath id="gL"><path d="M-2 52 A24 24 0 0 1 46 52 Z"/></clipPath><clipPath id="gR"><path d="M48 52 A24 24 0 0 1 96 52 Z"/></clipPath></defs>
         <path class="sclera" d="M-2 52 A24 24 0 0 1 46 52 Z" fill="#fff"/>
@@ -267,7 +288,7 @@
 
   </main>
 
-  <p class="hint" id="hint">눈을 클릭해 보세요 — 셋은 진짜 문, 나머지는 장난 👁</p>
+  <p class="hint" id="hint">눈을 클릭해 보세요 — 숨은 문 넷, 나머지는 장난 👁</p>
 
   <div class="veil" id="veil"></div>
 
@@ -393,6 +414,47 @@
         <span class="p-label">Story</span>
         <p>내가 사용하던 책은 책장 옆에 키를 재며 표시를 남기던 경험을 바탕으로, 사라지는 성장의 흔적을 <span class="hl--mark">기록하는 성장 도깨비</span>가 되었다.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== BRAND STORY detail · 물건 도깨비 (세계관) ===== -->
+  <section class="detail detail--brand" id="detail-brand" aria-hidden="true">
+    <header class="detail__bar">
+      <button class="back" data-close type="button"><i>←</i> 눈 그리드로 돌아가기</button>
+      <span class="detail__brand">DOKI · 物件 도깨비</span>
+    </header>
+    <div class="p-hero">
+      <p class="p-eyebrow">00 — 브랜드 세계관</p>
+      <h1 class="p-title">물건 도깨비<span class="p-hanja">物件鬼</span></h1>
+      <p class="p-sub">DOKI · Object Goblin</p>
+    </div>
+    <div class="p-grid">
+      <aside class="p-aside">
+        <span class="p-label">한국 설화 · Folklore</span>
+        <svg class="brand-eye" viewBox="0 0 120 70" aria-hidden="true">
+          <path d="M6 46 A24 24 0 0 1 54 46 Z" fill="#EAF3F0"/>
+          <path d="M12 46 A18 18 0 0 1 48 46 Z" fill="#3DAB9B"/>
+          <path d="M66 46 A24 24 0 0 1 114 46 Z" fill="#EAF3F0"/>
+          <path d="M72 46 A18 18 0 0 1 108 46 Z" fill="#3DAB9B"/>
+        </svg>
+      </aside>
+      <div class="p-story">
+        <span class="p-label">Story</span>
+        <p>주인의 손때가 스며들어 밤이 되면 사람의 형상으로 변해 장난을 치던 한국 설화 속 도깨비. 한국 설화 속 도깨비는 오래된 물건이나 사람이 사용하던 무생물인 물건이, 인간과의 관계를 통해 <span class="hl--mark">생명력</span>을 얻습니다.</p>
+      </div>
+    </div>
+    <div class="brand-philo">
+      <span class="p-label">브랜드 철학 · Philosophy</span>
+      <p class="philo-lead">우리는 가끔 물건을 원래 용도와는 조금 다르게 쓰곤 합니다. 이러한 사소하고 엉뚱한 습관과 비공식적인 사용 방식이 하나의 기록이 되는 순간, 사물은 <span class="hl">스스로 기록하는 존재</span>인 ‘도깨비’가 됩니다.</p>
+      <div class="equation">
+        <span class="eq-chip">사물</span>
+        <span class="eq-op">+</span>
+        <span class="eq-chip">기억과 경험 속 기능</span>
+        <span class="eq-op">=</span>
+        <span class="eq-chip eq-chip--hl">기록하는 도깨비</span>
+      </div>
+      <p class="philo-close">당신의 다정한 버릇과 손길을 기억하는 사물이, <span class="hl">세상에 하나뿐인 당신의 이야기</span>를 들려주기 시작합니다.</p>
+      <p class="brand-foot">깨어난 도깨비들 — 扇風鬼 · 化傘 · 키재기</p>
     </div>
   </section>
 

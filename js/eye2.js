@@ -2,7 +2,7 @@
    DOKI — eyes wall interactions
    Drives the pre-built collage tiles in eye2.html:
    - every tile's pupils track the cursor (smooth lerp)
-   - 3 doors (D=fan, C=umbrella, E=book) zoom into their own product page
+   - 4 doors (D=fan, C=umbrella, E=book, G=brand story) zoom into a page
    - the rest play a goblin trick + a teasing toast
    Requires GSAP.
    ============================================================ */
@@ -26,7 +26,7 @@
   const hintEl  = document.getElementById("hint");
 
   // per-product veil colour for the zoom-in
-  const VEIL = { fan: "#3DAB9B", umbrella: "#0E0E0E", book: "#0E0E0E" };
+  const VEIL = { fan: "#3DAB9B", umbrella: "#0E0E0E", book: "#0E0E0E", brand: "#3DAB9B" };
 
   let locked = false;
   let seq = 0;
