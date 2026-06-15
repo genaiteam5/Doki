@@ -123,6 +123,47 @@
     font-size:clamp(14px,1.05vw,17px);max-width:56ch;margin:clamp(36px,5vh,58px) 0 0;}
   .sw-body b{color:#141414;font-weight:600;}
 
+  /* scroll cue + 3D loader */
+  .sw-scrollcue{display:inline-flex;align-items:center;gap:10px;margin-top:clamp(30px,5vh,52px);
+    font-family:"Space Grotesk",sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#a3a39b;}
+  .sw-scrollcue b{font-size:14px;animation:cue 1.8s ease-in-out infinite;}
+  @keyframes cue{0%,100%{transform:translateY(-2px);}50%{transform:translateY(3px);}}
+  .sw-loader{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+    font-family:"Space Grotesk",sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#b3b3aa;
+    transition:opacity .5s var(--ease);}
+  .sw-stage.is-loaded .sw-loader{opacity:0;}
+  .sw-stage:not(.is-loaded) .sw-hint{opacity:0;}
+
+  /* ===== magazine lookbook (scroll area) ===== */
+  .sw-mag{padding:clamp(56px,12vh,150px) clamp(20px,6vw,118px) clamp(96px,18vh,220px);
+    display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(40px,7vh,116px) clamp(16px,2vw,34px);background:#F4F4F2;}
+  .sw-mag__intro{grid-column:1/13;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px;
+    border-top:1px solid #e1e1db;padding-top:22px;}
+  .sw-mag__intro h2{font-family:"IBM Plex Sans KR","Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.03em;
+    font-size:clamp(28px,4vw,58px);margin:0;}
+  .sw-mag__intro span{font-family:"Space Grotesk",sans-serif;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:#9a9a92;}
+  .sw-mag figure{margin:0;overflow:hidden;background:#ECECE7;}
+  .sw-mag figure img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sw-mag figcaption{font-family:"IBM Plex Sans KR",sans-serif;font-size:12.5px;color:#8c8c84;margin-top:14px;}
+  .m-tall{grid-column:2/7;aspect-ratio:4/5;}
+  .m-side{grid-column:8/12;aspect-ratio:3/4;align-self:end;}
+  .m-wide{grid-column:1/13;aspect-ratio:16/7;}
+  .m-sq{grid-column:3/8;aspect-ratio:1/1;}
+  .m-port{grid-column:8/13;aspect-ratio:4/5;align-self:center;}
+  .m-quote{grid-column:2/12;font-family:"IBM Plex Sans KR",sans-serif;font-weight:600;letter-spacing:-.02em;
+    line-height:1.42;font-size:clamp(24px,3.6vw,52px);margin:0;}
+  .m-quote em{font-style:normal;color:var(--mint);}
+  .m-note{grid-column:8/13;font-family:"IBM Plex Sans KR",sans-serif;font-weight:300;color:#5a5a52;line-height:1.9;
+    font-size:14px;align-self:center;margin:0;}
+  .m-plate{aspect-ratio:4/3;display:grid;place-items:center;color:#fff;}
+  .m-plate.l{grid-column:2/8;} .m-plate.r{grid-column:8/12;}
+  .m-plate b{font-family:"IBM Plex Sans KR","Space Grotesk",sans-serif;font-weight:700;font-size:clamp(30px,5vw,72px);opacity:.94;}
+  @media (max-width:760px){
+    .sw-mag{gap:44px 14px;}
+    .m-tall,.m-side,.m-wide,.m-sq,.m-port,.m-quote,.m-note,.m-plate{grid-column:1/13;}
+    .m-tall,.m-side,.m-sq,.m-port{aspect-ratio:4/5;}
+  }
+
   /* ---- toast ---- */
   .toast{position:fixed;left:50%;bottom:clamp(28px,6vh,64px);transform:translate(-50%,14px);z-index:60;
     background:var(--white);color:var(--black);font-family:"IBM Plex Sans KR",sans-serif;font-size:14px;
@@ -273,7 +314,7 @@
 
   <div class="veil" id="veil"></div>
 
-  <!-- ===== FAN · 扇風鬼 (Second White / photo studio) ===== -->
+  <!-- ===== FAN · 扇風鬼 (3D hero + photo magazine) ===== -->
   <section class="detail detail--fan" id="detail-fan" aria-hidden="true">
     <button class="sw-close" data-close type="button">Close <span aria-hidden="true">✕</span></button>
     <div class="sw-split">
@@ -283,22 +324,25 @@
         <p class="sw-sub">“여름이 끝나면 창고에 처박힌다.”</p>
         <p class="sw-concept"><span class="a">바람 만드는 기계</span><span class="ln"></span><span class="b">마이크</span> <em>(목소리를 기록한다)</em></p>
         <p class="sw-story">“내가 사용하던 선풍기는 반복적으로 목소리를 바꿔보며 놀던 경험을 바탕으로, 남지 않는 놀이의 순간을 기록하는 목소리 도깨비가 되었다. 우리는 목욕탕이나 화장실처럼 소리가 울리는 공간을 찾아 일부러 노래를 부르는 것처럼 선풍기 앞으로 가 ‘아아아—’ 소리를 내며 변하는 목소리를 즐긴다.”</p>
+        <span class="sw-scrollcue">Scroll <b>↓</b> Lookbook</span>
       </div>
-      <div class="sw-stage fan-stage">
-        <div class="fan-hero"><img id="fanHero" src="image/electricfan3.png" alt="선풍기" /></div>
-        <div class="fan-thumbs">
-          <button class="fan-thumb is-active" type="button" data-src="image/electricfan3.png"><img src="image/electricfan3.png" alt="선풍기 전체" /></button>
-          <button class="fan-thumb" type="button" data-src="image/electricfan.png"><img src="image/electricfan.png" alt="다리 디테일" /></button>
-          <button class="fan-thumb" type="button" data-src="image/electricfan2.png"><img src="image/electricfan2.png" alt="컨트롤 디테일" /></button>
-          <button class="fan-thumb" type="button" data-src="image/electricfan4.png"><img src="image/electricfan4.png" alt="디테일 4" /></button>
-          <button class="fan-thumb" type="button" data-src="image/electricfan5.png"><img src="image/electricfan5.png" alt="디테일 5" /></button>
-        </div>
-        <div class="sw-shadow"></div>
+      <div class="sw-stage" data-scene="fan">
+        <canvas class="sw-canvas"></canvas>
+        <div class="sw-loader">Loading 3D</div>
+        <p class="sw-hint">Drag to rotate · 날개 회전</p>
       </div>
+    </div>
+    <div class="sw-mag">
+      <div class="sw-mag__intro" data-rise><h2>Lookbook</h2><span>扇風鬼 — Second White Edit</span></div>
+      <figure class="m-tall" data-rise><img src="image/electricfan3.png" alt="선풍기 풀샷" /><figcaption>01 — 삼각대 위에 선 여름의 목소리</figcaption></figure>
+      <figure class="m-side" data-rise><img src="image/electricfan.png" alt="다리 조인트" /><figcaption>02 — 우드 레그 디테일</figcaption></figure>
+      <figure class="m-wide" data-rise><img src="image/electricfan2.png" alt="컨트롤 패널" /><figcaption>03 — 손끝으로 누르는 풍속</figcaption></figure>
+      <figure class="m-sq" data-rise><img src="image/electricfan4.png" alt="디테일" /><figcaption>04 — 날개의 결</figcaption></figure>
+      <figure class="m-port" data-rise><img src="image/electricfan5.png" alt="연출 컷" /><figcaption>05 — ‘아아아—’ 가 머무는 자리</figcaption></figure>
     </div>
   </section>
 
-  <!-- ===== UMBRELLA · 化傘 (Second White / three.js) ===== -->
+  <!-- ===== UMBRELLA · 化傘 (3D hero + editorial magazine) ===== -->
   <section class="detail detail--umbrella" id="detail-umbrella" aria-hidden="true">
     <button class="sw-close" data-close type="button">Close <span aria-hidden="true">✕</span></button>
     <div class="sw-split">
@@ -308,16 +352,24 @@
         <p class="sw-sub">“잃어버리거나 어딘가에 두고 온다.”</p>
         <p class="sw-concept"><span class="a">비를 막는 도구</span><span class="ln"></span><span class="b">지팡이-지도마커</span> <em>(이동 경로를 기록한다)</em></p>
         <p class="sw-story">“내가 사용하던 우산은 우산 끝으로 바닥을 두드리며 걸었던 경험을 바탕으로, 지나온 나만의 경로를 기록하는 길찾기 도깨비가 되었다. 비 오는 날, 우리는 항상 이동 중에 우산을 사용한다. 우산은 비를 맞으며 이동한 경로를 함께하는 물건이다.”</p>
+        <span class="sw-scrollcue">Scroll <b>↓</b> Notes</span>
       </div>
       <div class="sw-stage" data-scene="umbrella">
         <canvas class="sw-canvas"></canvas>
-        <div class="sw-shadow"></div>
+        <div class="sw-loader">Loading 3D</div>
         <p class="sw-hint">Drag to rotate</p>
       </div>
     </div>
+    <div class="sw-mag">
+      <div class="sw-mag__intro" data-rise><h2>Notes</h2><span>化傘 — 이동의 기록</span></div>
+      <p class="m-quote" data-rise>“우산은 비를 맞으며 <em>이동한 경로</em>를 함께하는 물건이다.”</p>
+      <p class="m-note" data-rise>우산 끝이 바닥을 두드릴 때마다, 걸음은 점선이 되어 지도 위에 남는다. 도착이 아니라 ‘지나옴’을 기록하는 길찾기 도깨비.</p>
+      <div class="m-plate l" style="background:#6E5DD6" data-rise><b>化傘</b></div>
+      <div class="m-plate r" style="background:#141414" data-rise><b>RAIN / 02</b></div>
+    </div>
   </section>
 
-  <!-- ===== BOOK · 책 도깨비 (Second White / three.js) ===== -->
+  <!-- ===== BOOK · 책 도깨비 (3D hero + editorial magazine) ===== -->
   <section class="detail detail--book" id="detail-book" aria-hidden="true">
     <button class="sw-close" data-close type="button">Close <span aria-hidden="true">✕</span></button>
     <div class="sw-split">
@@ -327,12 +379,20 @@
         <p class="sw-sub">“책장에 꽂혀서 안 꺼내본다. 이사하면 벽의 키재기 흔적이 사라진다. 그 집에서 자랐던 기억도 함께.”</p>
         <p class="sw-concept"><span class="a">읽는 물건</span><span class="ln"></span><span class="b">키재기</span> <em>(성장을 기록한다)</em></p>
         <p class="sw-story">“내가 사용하던 책은 책장 옆에 키를 재며 표시를 남기던 경험을 바탕으로, 사라지는 성장의 흔적을 기록하는 성장 도깨비가 되었다.”</p>
+        <span class="sw-scrollcue">Scroll <b>↓</b> Notes</span>
       </div>
       <div class="sw-stage" data-scene="book">
         <canvas class="sw-canvas"></canvas>
-        <div class="sw-shadow"></div>
+        <div class="sw-loader">Loading 3D</div>
         <p class="sw-hint">Drag to rotate · Floating</p>
       </div>
+    </div>
+    <div class="sw-mag">
+      <div class="sw-mag__intro" data-rise><h2>Notes</h2><span>책 도깨비 — 성장의 기록</span></div>
+      <p class="m-quote" data-rise>“벽 아래 사라진 연필 자국이, <em>책의 갈피</em>로 옮겨 적힌다.”</p>
+      <p class="m-note" data-rise>한 뼘씩 자라던 키를 책장 옆에 새기던 버릇. 이사로 지워질 흔적을, 페이지 사이에 영원히 남기는 성장 도깨비.</p>
+      <div class="m-plate l" style="background:#C56B4A" data-rise><b>7 · 12 · 15</b></div>
+      <div class="m-plate r" style="background:#141414" data-rise><b>GROWTH / 03</b></div>
     </div>
   </section>
 
@@ -350,9 +410,13 @@
   <div class="toast" id="toast" aria-live="polite"></div>
 
   <script type="importmap">
-  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  } }
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="js/eye2.js"></script>
   <script type="module" src="js/scenes.js"></script>
 </body>

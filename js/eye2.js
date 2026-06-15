@@ -173,8 +173,10 @@
         gsap.to(detail, { opacity: 1, duration: 0.45, ease: "power2.out" });
         gsap.to(veil, { opacity: 0, duration: 0.5, delay: 0.15, ease: "power2.out",
           onComplete: () => gsap.set(veil, { scale: 0, opacity: 1 }) });
-        // tell the 3D scenes / stage to wake up
+        // tell the 3D scenes / stage to wake up, then arm the magazine reveals
         window.dispatchEvent(new CustomEvent("doki:open", { detail: { product } }));
+        if (window.__dokiActivateScene) window.__dokiActivateScene(product);
+        initMag(detail);
         locked = false;
       },
     });
@@ -217,15 +219,18 @@
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeDetail));
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && openDetail) closeDetail(); });
 
-  /* ---------- fan photo studio: thumbnail → hero swap ---------- */
-  const fanHero = document.getElementById("fanHero");
-  document.querySelectorAll(".fan-thumb").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (!fanHero) return;
-      fanHero.src = btn.dataset.src;
-      document.querySelectorAll(".fan-thumb").forEach((b) => b.classList.toggle("is-active", b === btn));
+  /* ---------- magazine scroll reveals (GSAP ScrollTrigger) ---------- */
+  const hasST = !!window.ScrollTrigger;
+  if (hasST) gsap.registerPlugin(window.ScrollTrigger);
+  function initMag(detail) {
+    if (detail._magDone || !hasST) return;
+    detail._magDone = true;
+    detail.querySelectorAll(".sw-mag [data-rise]").forEach((el) => {
+      gsap.from(el, { opacity: 0, y: 64, duration: 1, ease: "power3.out",
+        scrollTrigger: { trigger: el, scroller: detail, start: "top 90%", once: true } });
     });
-  });
+    window.ScrollTrigger.refresh();
+  }
 
   /* ---------- toast + hint ---------- */
   let toastTimer;
