@@ -127,8 +127,7 @@ function objIsValid(obj) {
 }
 
 function fitToStage(obj, fit, pivot) {
-  obj.rotation.x = -Math.PI / 2;       // Rhino Z-up → Y-up
-  obj.updateMatrixWorld(true);
+  obj.updateMatrixWorld(true);         // these exports are already Y-up
   const box = new THREE.Box3().setFromObject(obj);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -180,7 +179,7 @@ function ensureScene(product) {
     (obj) => {
       if (objIsValid(obj)) {
         obj.traverse((c) => { if (c.isMesh) { c.material = mat; c.castShadow = true; c.receiveShadow = true; } });
-        try { fitToStage(obj, cfg.fit, pivot); finish(); }
+        try { fitToStage(obj, cfg.fit, pivot); o.float = (product === "book"); finish(); }
         catch (e) { console.warn("OBJ fit failed → procedural", product, e); useProc(); }
       } else { console.warn(`models/${product}.obj has no renderable mesh (NURBS) → procedural`); useProc(); }
     },
