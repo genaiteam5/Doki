@@ -31,6 +31,7 @@
   let locked = false;
   let seq = 0;
   let openDetail = null;
+  let opener = null;          // the eye state that opened the current page
   const eyeStates = [];
 
   /* ---------- wire up every eye tile ---------- */
@@ -152,6 +153,7 @@
     const product = s.product;
     const detail = document.getElementById("detail-" + product);
     if (!detail) { locked = false; s.busy = false; return; }
+    opener = s;
 
     const r = s.el.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -171,7 +173,8 @@
         gsap.to(detail, { opacity: 1, duration: 0.45, ease: "power2.out" });
         gsap.to(veil, { opacity: 0, duration: 0.5, delay: 0.15, ease: "power2.out",
           onComplete: () => gsap.set(veil, { scale: 0, opacity: 1 }) });
-        if (product === "fan") detail.classList.add("spinning"); // blades start turning
+        // tell the 3D scenes / stage to wake up
+        window.dispatchEvent(new CustomEvent("doki:open", { detail: { product } }));
         locked = false;
       },
     });
@@ -198,45 +201,30 @@
   function closeDetail() {
     const detail = openDetail;
     if (!detail) return;
+    const product = detail.id.replace("detail-", "");
+    window.dispatchEvent(new CustomEvent("doki:close", { detail: { product } }));
     gsap.killTweensOf(detail);
-    gsap.to(detail, { opacity: 0, duration: 0.4, ease: "power2.in",
+    // page fades while the giant eye smoothly scales back into the 9-grid
+    if (opener) gsap.to(opener.svg, { scale: 1, duration: 0.7, ease: "power3.out" });
+    gsap.to(detail, { opacity: 0, duration: 0.45, ease: "power2.in",
       onComplete: () => {
-        detail.classList.remove("is-open", "spinning", "fast", "raining");
+        detail.classList.remove("is-open");
         detail.setAttribute("aria-hidden", "true");
         eyeStates.forEach((s) => { gsap.set(s.svg, { scale: 1 }); s.busy = false; });
-        openDetail = null;
+        openDetail = null; opener = null;
       } });
   }
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeDetail));
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && openDetail) closeDetail(); });
 
-  /* ---------- per-product micro-interactions ---------- */
-  const fanCta = document.getElementById("fanCta");
-  if (fanCta) fanCta.addEventListener("click", () => {
-    const d = document.getElementById("detail-fan");
-    d.classList.add("spinning");
-    const fast = d.classList.toggle("fast");
-    fanCta.textContent = fast ? "바람 약하게" : "바람 세게";
-  });
-
-  const umbCta = document.getElementById("umbCta");
-  const umbRain = document.getElementById("umbRain");
-  let rainBuilt = false;
-  if (umbCta) umbCta.addEventListener("click", () => {
-    if (!rainBuilt) {
-      let html = "";
-      for (let i = 0; i < 60; i++) {
-        const left = Math.round(Math.random() * 100);
-        const dur = (0.5 + Math.random() * 0.7).toFixed(2);
-        const delay = (Math.random() * 1.2).toFixed(2);
-        html += `<i style="left:${left}%;animation-duration:${dur}s;animation-delay:-${delay}s"></i>`;
-      }
-      umbRain.innerHTML = html;
-      rainBuilt = true;
-    }
-    const d = document.getElementById("detail-umbrella");
-    const raining = d.classList.toggle("raining");
-    umbCta.textContent = raining ? "비 그치기" : "비 내리기";
+  /* ---------- fan photo studio: thumbnail → hero swap ---------- */
+  const fanHero = document.getElementById("fanHero");
+  document.querySelectorAll(".fan-thumb").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!fanHero) return;
+      fanHero.src = btn.dataset.src;
+      document.querySelectorAll(".fan-thumb").forEach((b) => b.classList.toggle("is-active", b === btn));
+    });
   });
 
   /* ---------- toast + hint ---------- */
