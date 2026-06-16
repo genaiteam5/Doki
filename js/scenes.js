@@ -175,10 +175,15 @@ function ensureScene(product) {
   const finish = () => { o.loaded = true; stage.classList.add("is-loaded"); if (o.active) resize(o); };
 
   const mat = matte(cfg.color, cfg.rough, cfg.metal);
+  mat.side = THREE.DoubleSide;   // decimated meshes have inconsistent winding
   loader.load(cfg.url,
     (obj) => {
       if (objIsValid(obj)) {
-        obj.traverse((c) => { if (c.isMesh) { c.material = mat; c.castShadow = true; c.receiveShadow = true; } });
+        obj.traverse((c) => {
+          if (!c.isMesh) return;
+          if (!c.geometry.attributes.normal) c.geometry.computeVertexNormals(); // decimated OBJs ship no normals
+          c.material = mat; c.castShadow = true; c.receiveShadow = true;
+        });
         try { fitToStage(obj, cfg.fit, pivot); o.float = (product === "book"); finish(); }
         catch (e) { console.warn("OBJ fit failed → procedural", product, e); useProc(); }
       } else { console.warn(`models/${product}.obj has no renderable mesh (NURBS) → procedural`); useProc(); }

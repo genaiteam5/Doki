@@ -1,8 +1,4 @@
-# Source 3D models live in assets/ (large); the site serves /models.
+# Full-resolution source 3D models live in assets/ (100MB+). The site
+# serves the decimated meshes in /models (regenerate with tools/decimate.js).
 /assets/models*.obj
 /assets/models*.mtl
-
-# fan.obj is 133MB — exceeds GitHub's 100MB file limit and is too heavy
-# to serve. Decimate it (<~20MB, ideally a Draco .glb) to enable it; until
-# then the fan page uses the procedural model (with spinning blades).
-/models/fan.obj
