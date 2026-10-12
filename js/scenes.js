@@ -14,16 +14,18 @@ import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 
 // materials read off the product photos: natural wood + matte off-white
 const WOOD = 0xC7A472, WOOD_L = 0xD8C097, WHITE = 0xF0EFEA;
+// regions matched top→bottom: first match wins, last (bound-less) is catch-all.
+// ny = height 0..1, nr = distance from the vertical axis 0..1.
 const MODELS = {
-  // wood tripod legs (lower) + white head/pole (upper)
+  // only the splayed legs (lower AND far from the central pole) are wood
   fan: { url: "models/fan.obj", color: 0xEAEAE6, fit: 3.4, regions: [
-    { to: 0.55, color: WOOD, rough: 0.62 },
-    { from: 0.55, color: WHITE, rough: 0.42, metal: 0.06 },
+    { to: 0.52, rFrom: 0.34, color: WOOD, rough: 0.62 },   // tripod legs
+    { color: WHITE, rough: 0.42, metal: 0.06 },             // head, pole, blades
   ] },
-  // white canopy + shaft (lower) + wood hook handle (upper)
+  // only the hook handle (the very top) is wood; shaft + canopy stay white
   umbrella: { url: "models/umbrella.obj", color: 0x6E5DD6, fit: 3.3, regions: [
-    { to: 0.76, color: WHITE, rough: 0.5 },
-    { from: 0.76, color: WOOD_L, rough: 0.6 },
+    { from: 0.85, color: WOOD_L, rough: 0.6 },              // hook handle
+    { color: WHITE, rough: 0.5 },                           // shaft + canopy
   ] },
   // light birch plywood
   book: { url: "models/book.obj", color: 0xC56B4A, fit: 3.0, regions: [
@@ -155,6 +157,8 @@ function buildRegioned(obj, regions) {
   obj.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(obj);
   const minY = box.min.y, hY = (box.max.y - box.min.y) || 1;
+  const cx = (box.min.x + box.max.x) / 2, cz = (box.min.z + box.max.z) / 2;
+  const maxR = Math.max(box.max.x - cx, box.max.z - cz, 1e-4);
   const buckets = regions.map(() => []);
   const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
   obj.traverse((m) => {
@@ -164,8 +168,12 @@ function buildRegioned(obj, regions) {
       a.fromBufferAttribute(pos, i).applyMatrix4(mw);
       b.fromBufferAttribute(pos, i + 1).applyMatrix4(mw);
       c.fromBufferAttribute(pos, i + 2).applyMatrix4(mw);
-      const t = ((a.y + b.y + c.y) / 3 - minY) / hY;
-      let ri = regions.findIndex((r) => t >= (r.from ?? 0) && t < (r.to ?? 1.0001));
+      const mx = (a.x + b.x + c.x) / 3, my = (a.y + b.y + c.y) / 3, mz = (a.z + b.z + c.z) / 3;
+      const ny = (my - minY) / hY;
+      const nr = Math.hypot(mx - cx, mz - cz) / maxR;
+      let ri = regions.findIndex((r) =>
+        ny >= (r.from ?? 0) && ny < (r.to ?? 1.0001) &&
+        nr >= (r.rFrom ?? 0) && nr < (r.rTo ?? 1.0001));
       if (ri < 0) ri = regions.length - 1;
       buckets[ri].push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
     }
