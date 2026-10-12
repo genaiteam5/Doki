@@ -12,10 +12,23 @@
 import * as THREE from "three";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 
+// materials read off the product photos: natural wood + matte off-white
+const WOOD = 0xC7A472, WOOD_L = 0xD8C097, WHITE = 0xF0EFEA;
 const MODELS = {
-  fan:      { url: "models/fan.obj",      color: 0xEAEAE6, rough: 0.5,  metal: 0.1, fit: 3.4 },
-  umbrella: { url: "models/umbrella.obj", color: 0x6E5DD6, rough: 0.5,  metal: 0.05, fit: 3.3 },
-  book:     { url: "models/book.obj",     color: 0xC56B4A, rough: 0.62, metal: 0.0,  fit: 3.0 },
+  // wood tripod legs (lower) + white head/pole (upper)
+  fan: { url: "models/fan.obj", color: 0xEAEAE6, fit: 3.4, regions: [
+    { to: 0.55, color: WOOD, rough: 0.62 },
+    { from: 0.55, color: WHITE, rough: 0.42, metal: 0.06 },
+  ] },
+  // white canopy + shaft (lower) + wood hook handle (upper)
+  umbrella: { url: "models/umbrella.obj", color: 0x6E5DD6, fit: 3.3, regions: [
+    { to: 0.76, color: WHITE, rough: 0.5 },
+    { from: 0.76, color: WOOD_L, rough: 0.6 },
+  ] },
+  // light birch plywood
+  book: { url: "models/book.obj", color: 0xC56B4A, fit: 3.0, regions: [
+    { color: WOOD_L, rough: 0.62 },
+  ] },
 };
 
 const scenes = {};
@@ -136,6 +149,42 @@ function fitToStage(obj, fit, pivot) {
   const holder = new THREE.Group(); holder.add(obj); holder.scale.setScalar(s); pivot.add(holder);
 }
 
+/* split a merged mesh into materials by height band (no UVs needed) —
+   lets the single-colour exports show wood legs/handle vs white body */
+function buildRegioned(obj, regions) {
+  obj.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(obj);
+  const minY = box.min.y, hY = (box.max.y - box.min.y) || 1;
+  const buckets = regions.map(() => []);
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  obj.traverse((m) => {
+    if (!m.isMesh || !m.geometry) return;
+    const pos = m.geometry.attributes.position, mw = m.matrixWorld;
+    for (let i = 0; i < pos.count; i += 3) {
+      a.fromBufferAttribute(pos, i).applyMatrix4(mw);
+      b.fromBufferAttribute(pos, i + 1).applyMatrix4(mw);
+      c.fromBufferAttribute(pos, i + 2).applyMatrix4(mw);
+      const t = ((a.y + b.y + c.y) / 3 - minY) / hY;
+      let ri = regions.findIndex((r) => t >= (r.from ?? 0) && t < (r.to ?? 1.0001));
+      if (ri < 0) ri = regions.length - 1;
+      buckets[ri].push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+    }
+  });
+  const group = new THREE.Group();
+  regions.forEach((r, i) => {
+    if (!buckets[i].length) return;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(buckets[i], 3));
+    g.computeVertexNormals();
+    const mat = matte(r.color, r.rough ?? 0.55, r.metal ?? 0);
+    mat.side = THREE.DoubleSide;
+    const mesh = new THREE.Mesh(g, mat);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    group.add(mesh);
+  });
+  return group;
+}
+
 /* ---------- scene setup ---------- */
 function ensureScene(product) {
   if (scenes[product]) return scenes[product];
@@ -174,18 +223,15 @@ function ensureScene(product) {
   };
   const finish = () => { o.loaded = true; stage.classList.add("is-loaded"); if (o.active) resize(o); };
 
-  const mat = matte(cfg.color, cfg.rough, cfg.metal);
-  mat.side = THREE.DoubleSide;   // decimated meshes have inconsistent winding
   loader.load(cfg.url,
     (obj) => {
       if (objIsValid(obj)) {
-        obj.traverse((c) => {
-          if (!c.isMesh) return;
-          if (!c.geometry.attributes.normal) c.geometry.computeVertexNormals(); // decimated OBJs ship no normals
-          c.material = mat; c.castShadow = true; c.receiveShadow = true;
-        });
-        try { fitToStage(obj, cfg.fit, pivot); o.float = (product === "book"); finish(); }
-        catch (e) { console.warn("OBJ fit failed → procedural", product, e); useProc(); }
+        try {
+          const model = buildRegioned(obj, cfg.regions);   // wood/white by height band
+          fitToStage(model, cfg.fit, pivot);
+          o.float = (product === "book");
+          finish();
+        } catch (e) { console.warn("OBJ build failed → procedural", product, e); useProc(); }
       } else { console.warn(`models/${product}.obj has no renderable mesh (NURBS) → procedural`); useProc(); }
     },
     undefined,
