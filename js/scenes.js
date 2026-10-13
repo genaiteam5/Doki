@@ -22,9 +22,9 @@ const MODELS = {
     { to: 0.52, rFrom: 0.34, color: WOOD, rough: 0.62 },   // tripod legs
     { color: WHITE, rough: 0.42, metal: 0.06 },             // head, pole, blades
   ] },
-  // only the hook handle (the very top) is wood; shaft + canopy stay white
+  // model sits tip-up/handle-down, so the wood hook handle is the BOTTOM band
   umbrella: { url: "models/umbrella.obj", color: 0x6E5DD6, fit: 3.3, regions: [
-    { from: 0.85, color: WOOD_L, rough: 0.6 },              // hook handle
+    { to: 0.20, color: WOOD_L, rough: 0.6 },                // hook handle (bottom)
     { color: WHITE, rough: 0.5 },                           // shaft + canopy
   ] },
   // light birch plywood
