@@ -17,8 +17,8 @@ const WOOD = 0xC7A472, WOOD_L = 0xD8C097, WHITE = 0xF0EFEA;
 // regions matched top→bottom: first match wins, last (bound-less) is catch-all.
 // ny = height 0..1, nr = distance from the vertical axis 0..1.
 const MODELS = {
-  // only the splayed legs (lower AND far from the central pole) are wood
-  fan: { url: "models/fan.obj", color: 0xEAEAE6, fit: 3.4, regions: [
+  // "fan dobe" STL is Z-up → stand it with rotX; wood only on splayed legs
+  fan: { url: "models/fan.obj", color: 0xEAEAE6, fit: 3.4, rotX: -Math.PI / 2, regions: [
     { to: 0.52, rFrom: 0.34, color: WOOD, rough: 0.62 },   // tripod legs
     { color: WHITE, rough: 0.42, metal: 0.06 },             // head, pole, blades
   ] },
@@ -235,6 +235,7 @@ function ensureScene(product) {
     (obj) => {
       if (objIsValid(obj)) {
         try {
+          if (cfg.rotX) { obj.rotation.x = cfg.rotX; obj.updateMatrixWorld(true); }
           const model = buildRegioned(obj, cfg.regions);   // wood/white by height band
           fitToStage(model, cfg.fit, pivot);
           o.float = (product === "book");

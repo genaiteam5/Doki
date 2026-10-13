@@ -2,3 +2,5 @@
 # serves the decimated meshes in /models (regenerate with tools/decimate.js).
 /assets/models*.obj
 /assets/models*.mtl
+# large source STL (decimated into models/fan.obj via tools/stl-decimate.js)
+/models/*.stl
