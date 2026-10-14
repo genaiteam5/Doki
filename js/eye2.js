@@ -219,6 +219,23 @@
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeDetail));
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && openDetail) closeDetail(); });
 
+  /* ---------- fan page: press to "stamp" ---------- */
+  const fanPage = document.getElementById("detail-fan");
+  if (fanPage) {
+    fanPage.addEventListener("click", (e) => {
+      if (e.target.closest("[data-close]")) return;      // the back button closes, doesn't stamp
+      const stamp = document.createElement("img");
+      stamp.src = "image/stamp.svg";
+      stamp.className = "doki-stamp";
+      stamp.alt = "";
+      stamp.style.left = e.clientX + "px";
+      stamp.style.top = e.clientY + "px";
+      stamp.style.setProperty("--rot", (Math.random() * 26 - 13).toFixed(1) + "deg");
+      document.body.appendChild(stamp);
+      stamp.addEventListener("animationend", () => stamp.remove());
+    });
+  }
+
   /* ---------- magazine scroll reveals (GSAP ScrollTrigger) ---------- */
   const hasST = !!window.ScrollTrigger;
   if (hasST) gsap.registerPlugin(window.ScrollTrigger);
