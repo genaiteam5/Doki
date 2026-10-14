@@ -210,7 +210,8 @@
     if (opener) gsap.to(opener.svg, { scale: 1, duration: 0.7, ease: "power3.out" });
     gsap.to(detail, { opacity: 0, duration: 0.45, ease: "power2.in",
       onComplete: () => {
-        detail.classList.remove("is-open");
+        detail.classList.remove("is-open", "scrolled");
+        detail.scrollTop = 0;
         detail.setAttribute("aria-hidden", "true");
         eyeStates.forEach((s) => { gsap.set(s.svg, { scale: 1 }); s.busy = false; });
         openDetail = null; opener = null;
@@ -234,6 +235,10 @@
       document.body.appendChild(stamp);
       stamp.addEventListener("animationend", () => stamp.remove());
     });
+    // reveal the pinned back icon once the design's own icon scrolls away
+    fanPage.addEventListener("scroll", () => {
+      fanPage.classList.toggle("scrolled", fanPage.scrollTop > 180);
+    }, { passive: true });
   }
 
   /* ---------- magazine scroll reveals (GSAP ScrollTrigger) ---------- */
