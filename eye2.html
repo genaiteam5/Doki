@@ -126,15 +126,12 @@
   /* ===== FAN · full dobe page (high-res SVG) ===== */
   .detail--fan.dobe{background:#fff;color:#141414;}
   .dobe-scroll{min-height:100vh;display:flex;justify-content:center;}
-  .dobe-full{display:block;width:100%;max-width:1497px;height:auto;}
-  /* custom graphic back button (top-left) */
-  .dobe-back{position:fixed;top:clamp(16px,3vh,30px);right:clamp(16px,4vw,46px);z-index:63;
-    width:clamp(44px,5vw,52px);height:clamp(44px,5vw,52px);border-radius:50%;border:none;cursor:pointer;
-    background:#2FB8A6;display:grid;place-items:center;box-shadow:0 7px 20px rgba(20,20,16,.18);
-    transition:transform .25s var(--ease),background .25s;}
-  .dobe-back:hover{transform:scale(1.07);background:#27a896;}
-  .dobe-back:active{transform:scale(.92);}
-  .dobe-back svg{width:54%;height:54%;}
+  .dobe-stage{position:relative;width:100%;max-width:1497px;}
+  .dobe-full{display:block;width:100%;height:auto;}
+  /* clickable hotspot over the design's own mint icon (top-right) */
+  .dobe-iconback{position:absolute;left:92.76%;top:1.32%;width:5%;aspect-ratio:1;
+    transform:translate(-50%,-50%);background:none;border:none;border-radius:50%;cursor:pointer;padding:0;}
+  .dobe-iconback:hover{box-shadow:0 0 0 5px rgba(74,180,166,.35);}
   /* click stamp */
   .doki-stamp{position:fixed;z-index:70;width:clamp(120px,16vw,168px);height:auto;pointer-events:none;
     transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1);transform-origin:center;
@@ -341,14 +338,12 @@
 
   <!-- ===== FAN · 율비(律比) — full dobe page (high-res SVG) ===== -->
   <section class="detail detail--fan dobe" id="detail-fan" aria-hidden="true">
-    <button class="dobe-back" data-close type="button" aria-label="뒤로가기">
-      <svg viewBox="0 0 26 26" aria-hidden="true">
-        <path d="M11 6 L5 13 L11 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5 13 H16 a5 5 0 0 1 5 5 v1.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
     <div class="dobe-scroll">
-      <img class="dobe-full" src="image/fan-page.svg" alt="율비 — 선풍기 도깨비(목소리 도깨비)" />
+      <div class="dobe-stage">
+        <img class="dobe-full" src="image/fan-page.svg" alt="율비 — 선풍기 도깨비(목소리 도깨비)" />
+        <!-- transparent hotspot over the design's own mint icon (top-right) -->
+        <button class="dobe-iconback" data-close type="button" aria-label="뒤로가기"></button>
+      </div>
     </div>
   </section>
 
@@ -430,7 +425,7 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/eye2.js?v=20261015"></script>
-  <script type="module" src="js/scenes.js?v=20261015"></script>
+  <script src="js/eye2.js?v=20261015b"></script>
+  <script type="module" src="js/scenes.js?v=20261015b"></script>
 </body>
 </html>
