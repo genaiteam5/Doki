@@ -123,14 +123,15 @@
     font-size:clamp(14px,1.05vw,17px);max-width:56ch;margin:clamp(36px,5vh,58px) 0 0;}
   .sw-body b{color:#141414;font-weight:600;}
 
-  /* ===== FAN · full dobe page (high-res SVG) ===== */
-  .detail--fan.dobe{background:#fff;color:#141414;}
+  /* ===== dobe full-page (high-res SVG) — fan & umbrella ===== */
+  .detail.dobe{background:#fff;color:#141414;}
   .dobe-scroll{min-height:100vh;display:flex;justify-content:center;}
   .dobe-stage{position:relative;width:100%;max-width:1497px;}
   .dobe-full{display:block;width:100%;height:auto;}
   /* clickable hotspot over the design's own mint icon (top-right) */
   .dobe-iconback{position:absolute;left:92.76%;top:1.32%;width:5%;aspect-ratio:1;
     transform:translate(-50%,-50%);background:none;border:none;border-radius:50%;cursor:pointer;padding:0;}
+  .dobe-iconback--umb{top:1.18%;}
   .dobe-iconback:hover{box-shadow:0 0 0 5px rgba(74,180,166,.35);}
   /* pinned clone of that same icon, revealed on scroll */
   .dobe-fixedback{position:fixed;top:clamp(14px,2.4vh,26px);right:clamp(16px,3vw,40px);z-index:64;
@@ -139,8 +140,8 @@
     transition:opacity .35s var(--ease),transform .35s var(--ease);
     filter:drop-shadow(0 6px 16px rgba(20,20,16,.2));}
   .dobe-fixedback img{width:100%;display:block;}
-  .detail--fan.scrolled .dobe-fixedback{opacity:1;transform:none;pointer-events:auto;}
-  .detail--fan.scrolled .dobe-fixedback:hover{transform:scale(1.07);}
+  .dobe.scrolled .dobe-fixedback{opacity:1;transform:none;pointer-events:auto;}
+  .dobe.scrolled .dobe-fixedback:hover{transform:scale(1.07);}
   /* click stamp */
   .doki-stamp{position:fixed;z-index:70;width:clamp(120px,16vw,168px);height:auto;pointer-events:none;
     transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1);transform-origin:center;
@@ -358,32 +359,14 @@
     </div>
   </section>
 
-  <!-- ===== UMBRELLA · 化傘 (3D hero + editorial magazine) ===== -->
-  <section class="detail detail--umbrella" id="detail-umbrella" aria-hidden="true">
-    <button class="sw-close" data-close type="button">Close <span aria-hidden="true">✕</span></button>
-    <div class="sw-split">
-      <div class="sw-copy">
-        <p class="sw-eyebrow">DOKI · 02 — 길찾기 도깨비</p>
-        <h1 class="sw-title">化傘<span class="ko"> : 우산 도깨비</span></h1>
-        <p class="sw-sub">“잃어버리거나 어딘가에 두고 온다.”</p>
-        <p class="sw-concept"><span class="a">비를 막는 도구</span><span class="ln"></span><span class="b">지팡이-지도마커</span> <em>(이동 경로를 기록한다)</em></p>
-        <p class="sw-story">“내가 사용하던 우산은 우산 끝으로 바닥을 두드리며 걸었던 경험을 바탕으로, 지나온 나만의 경로를 기록하는 길찾기 도깨비가 되었다. 비 오는 날, 우리는 항상 이동 중에 우산을 사용한다. 우산은 비를 맞으며 이동한 경로를 함께하는 물건이다.”</p>
-        <span class="sw-scrollcue">Scroll <b>↓</b> Notes</span>
+  <!-- ===== UMBRELLA · 化傘 — full dobe page (high-res SVG) ===== -->
+  <section class="detail detail--umbrella dobe" id="detail-umbrella" aria-hidden="true">
+    <button class="dobe-fixedback" data-close type="button" aria-label="뒤로가기"><img src="image/back-icon.svg" alt="" /></button>
+    <div class="dobe-scroll">
+      <div class="dobe-stage">
+        <img class="dobe-full" src="image/umbrella-page.svg" alt="化傘 — 우산 도깨비(길찾기 도깨비)" />
+        <button class="dobe-iconback dobe-iconback--umb" data-close type="button" aria-label="뒤로가기"></button>
       </div>
-      <div class="sw-stage" data-scene="umbrella">
-        <canvas class="sw-canvas"></canvas>
-        <div class="sw-loader">Loading 3D</div>
-        <p class="sw-hint">Drag to rotate</p>
-      </div>
-    </div>
-    <div class="sw-mag">
-      <div class="sw-mag__intro" data-rise><h2>Lookbook</h2><span>化傘 — Second White Edit</span></div>
-      <figure class="m-tall" data-rise><img loading="lazy" src="image/umbrella1.png" alt="우산 풀샷" /><figcaption>01 — 머리 위로 펼쳐지는 작은 지붕</figcaption></figure>
-      <figure class="m-side" data-rise><img loading="lazy" src="image/umbrella2.png" alt="우산 디테일" /><figcaption>02 — 손에 쥐는 우드 핸들</figcaption></figure>
-      <p class="m-quote" data-rise>“우산은 비를 맞으며 <em>이동한 경로</em>를 함께하는 물건이다.”</p>
-      <figure class="m-wide" data-rise><img loading="lazy" src="image/umbrella3.png" alt="우산 연출" /><figcaption>03 — 비 오는 날의 동행</figcaption></figure>
-      <figure class="m-sq" data-rise><img loading="lazy" src="image/umbrella4.png" alt="우산 디테일" /><figcaption>04 — 살이 만드는 결</figcaption></figure>
-      <figure class="m-port" data-rise><img loading="lazy" src="image/umbrella5.png" alt="우산 연출" /><figcaption>05 — 지나온 길의 흔적</figcaption></figure>
     </div>
   </section>
 
@@ -436,7 +419,7 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/eye2.js?v=20261015c"></script>
-  <script type="module" src="js/scenes.js?v=20261015c"></script>
+  <script src="js/eye2.js?v=20261015d"></script>
+  <script type="module" src="js/scenes.js?v=20261015d"></script>
 </body>
 </html>

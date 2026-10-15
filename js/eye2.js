@@ -220,10 +220,9 @@
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closeDetail));
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && openDetail) closeDetail(); });
 
-  /* ---------- fan page: press to "stamp" ---------- */
-  const fanPage = document.getElementById("detail-fan");
-  if (fanPage) {
-    fanPage.addEventListener("click", (e) => {
+  /* ---------- dobe pages (fan/umbrella): press to "stamp" + pinned back ---------- */
+  document.querySelectorAll(".detail.dobe").forEach((page) => {
+    page.addEventListener("click", (e) => {
       if (e.target.closest("[data-close]")) return;      // the back button closes, doesn't stamp
       const stamp = document.createElement("img");
       stamp.src = "image/stamp.svg";
@@ -236,10 +235,10 @@
       stamp.addEventListener("animationend", () => stamp.remove());
     });
     // reveal the pinned back icon once the design's own icon scrolls away
-    fanPage.addEventListener("scroll", () => {
-      fanPage.classList.toggle("scrolled", fanPage.scrollTop > 180);
+    page.addEventListener("scroll", () => {
+      page.classList.toggle("scrolled", page.scrollTop > 180);
     }, { passive: true });
-  }
+  });
 
   /* ---------- magazine scroll reveals (GSAP ScrollTrigger) ---------- */
   const hasST = !!window.ScrollTrigger;
