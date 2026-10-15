@@ -223,9 +223,10 @@
   /* ---------- dobe pages (fan/umbrella): press to "stamp" + pinned back ---------- */
   document.querySelectorAll(".detail.dobe").forEach((page) => {
     page.addEventListener("click", (e) => {
+      if (!page.dataset.stamp) return;                   // no stamp configured for this page
       if (e.target.closest("[data-close]")) return;      // the back button closes, doesn't stamp
       const stamp = document.createElement("img");
-      stamp.src = page.dataset.stamp || "image/stamp.svg";
+      stamp.src = page.dataset.stamp;
       stamp.className = "doki-stamp";
       stamp.alt = "";
       stamp.style.left = e.clientX + "px";
