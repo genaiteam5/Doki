@@ -132,6 +132,7 @@
   .dobe-iconback{position:absolute;left:92.76%;top:1.32%;width:5%;aspect-ratio:1;
     transform:translate(-50%,-50%);background:none;border:none;border-radius:50%;cursor:pointer;padding:0;}
   .dobe-iconback--umb{top:1.18%;}
+  .dobe-iconback--brand{top:1.62%;}
   .dobe-iconback:hover{box-shadow:0 0 0 5px rgba(74,180,166,.35);}
   /* pinned clone of that same icon, revealed on scroll */
   .dobe-fixedback{position:fixed;top:clamp(14px,2.4vh,26px);right:clamp(16px,3vw,40px);z-index:64;
@@ -381,14 +382,14 @@
     </div>
   </section>
 
-  <!-- ===== BRAND STORY · 물건 도깨비 (Second White / manifesto) ===== -->
-  <section class="detail sw--brand" id="detail-brand" aria-hidden="true">
-    <button class="sw-close" data-close type="button">Close <span aria-hidden="true">✕</span></button>
-    <div class="sw-manifesto">
-      <p class="sw-eyebrow">DOKI · 물건 도깨비 · 物件鬼</p>
-      <h1 class="sw-title">DOKI<span class="ko"> : Object Goblin</span></h1>
-      <p class="sw-quote">“당신만의 익숙한 버릇이 <em>사물의 새로운 기록방식</em>이 된다면?”</p>
-      <p class="sw-body">한국 설화 속 도깨비는 오래된 물건이나 사람이 사용하던 무생물이 인간과의 관계를 통해 <b>생명력</b>을 얻습니다. 우리는 가끔 물건을 원래 용도와는 조금 다르게 쓰곤 합니다. 무심코 지나쳤던 사물과의 비공식적인 사용 방식이 하나의 기록이 되는 순간, 사물은 <b>스스로 기록하는 존재</b>인 ‘도깨비’가 됩니다.</p>
+  <!-- ===== BRAND / PROJECT intro · 물건 도깨비 — full dobe page (high-res SVG) ===== -->
+  <section class="detail detail--brand dobe" id="detail-brand" aria-hidden="true">
+    <button class="dobe-fixedback" data-close type="button" aria-label="뒤로가기"><img src="image/back-icon.svg" alt="" /></button>
+    <div class="dobe-scroll">
+      <div class="dobe-stage">
+        <img class="dobe-full" src="image/brand-page.svg?v=1" alt="물건 도깨비 — 프로젝트 소개" />
+        <button class="dobe-iconback dobe-iconback--brand" data-close type="button" aria-label="뒤로가기"></button>
+      </div>
     </div>
   </section>
 
